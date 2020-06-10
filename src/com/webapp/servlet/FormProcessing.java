@@ -48,7 +48,6 @@ public class FormProcessing extends HttpServlet {
 			String jspPath = "/successfulRegistration.jsp";
 			getServletContext().getRequestDispatcher(jspPath).forward(request, response);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			System.out.println("*** Errore: " + e.getMessage() + " ***");
 		}
 	}

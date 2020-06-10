@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -20,6 +19,8 @@ public class CustomerDAO {
 	
 	private static CustomerDAO instance;
 	private Connection connection;
+	private Collection<Customer> cache;
+	private boolean isModified;
 	
 	//Costanti per l'accesso al db
 	private static final String DB_URI = "jdbc:mysql://localhost/test";
@@ -34,9 +35,11 @@ public class CustomerDAO {
 	 */
 	public static CustomerDAO getInstance() {
 		if(instance == null) {
-			instance = new CustomerDAO();
 			try {
 				Class.forName("com.mysql.cj.jdbc.Driver");
+				instance = new CustomerDAO();
+				instance.cache = null;
+				instance.isModified = false;
 			} catch (ClassNotFoundException e) {
 				System.err.println("!!! Driver non caricato !!!");
 			}
@@ -46,38 +49,45 @@ public class CustomerDAO {
 	}
 	
 	/**
-	 * Legge tutti i customer presenti nella tabella del DB
+	 * Legge tutti i customer presenti nella cache. 
+	 * Se la cache è vuota interroga al db, altrimenti ritorna direttamente i customer nella cache
 	 * @return una collection con tutti i customer
 	 * @throws SQLException se si verificando problemi di connessione o interrogazione
 	 */
 	public Collection<Customer> readCustomers() throws SQLException{
-		//Preparo la collection
-		Collection<Customer> customers = new LinkedList<Customer>();
-		
-		//Apro la connessione
-		openNewConnection();
-		
-		//Eseguo la query di select
-		String query = "SELECT * FROM customer";
-		PreparedStatement statement = getNewStatement(query);
-		statement.execute();
-		
-		//Popolo la collection con i vari customer
-		ResultSet resultSet = statement.getResultSet();
-		
-		while(resultSet.next()) {
-			String first_name = resultSet.getString(ColumnNames.firstName.toString());
-			String last_name = resultSet.getString(ColumnNames.lastName.toString());
-			String phone_number = resultSet.getString(ColumnNames.phoneNumber.toString());
-			Customer cust = new Customer(first_name, last_name, phone_number);
+		if(cache == null || isModified) {
+			//Preparo la collection
+			Collection<Customer> customers = new LinkedList<Customer>();
 			
-			customers.add(cust);
+			//Apro la connessione
+			openNewConnection();
+			
+			//Eseguo la query di select
+			String query = "SELECT * FROM customer";
+			PreparedStatement statement = getNewStatement(query);
+			statement.execute();
+			
+			//Popolo la collection con i vari customer
+			ResultSet resultSet = statement.getResultSet();
+			
+			while(resultSet.next()) {
+				String first_name = resultSet.getString(ColumnNames.firstName.toString());
+				String last_name = resultSet.getString(ColumnNames.lastName.toString());
+				String phone_number = resultSet.getString(ColumnNames.phoneNumber.toString());
+				String id = resultSet.getString(ColumnNames.id.toString());
+				Customer cust = new Customer(first_name, last_name, phone_number, id);
+				
+				customers.add(cust);
+			}
+			
+			//Chiudo la connessione
+			connection.close();
+			
+			//Cacho i customers
+			cache = customers;
 		}
-		
-		//Chiudo la connessione
-		connection.close();
-		
-		return customers;	
+	
+		return cache;	
 	}
 	
 	/**
@@ -93,9 +103,33 @@ public class CustomerDAO {
 		statement.setString(1, customer.getFirstName());
 		statement.setString(2, customer.getLastName());
 		statement.setString(3, customer.getPhoneNumber());
+
 		statement.executeUpdate();
 		
 		connection.close();
+		
+		//Aggiorno il flag, indicando che il DB è stato modificato 
+		isModified = true;
+	}
+	
+	/**
+	 * Elimina un customer dal DB
+	 * @param customerID id del customer da eliminare
+	 * @throws SQLException 
+	 */
+	public void deleteCustomer(String customerID) throws SQLException {
+		openNewConnection();
+		
+		String query = "DELETE FROM customer WHERE cust_id=?";
+		PreparedStatement statement = getNewStatement(query);
+		statement.setString(1, customerID);
+		
+		statement.executeUpdate();
+		
+		connection.close();
+		
+		//Aggiorno il flag di modifica
+		isModified = true;
 	}
 	
 	/**
@@ -124,7 +158,11 @@ public class CustomerDAO {
 	 *
 	 */
 	private enum ColumnNames{
-		firstName("first_name"), lastName("last_name"), phoneNumber("phone");
+		firstName("first_name"),
+		lastName("last_name"), 
+		phoneNumber("phone"),
+		id("cust_id");
+		
 		private String columnName;
 		
 		private ColumnNames(String name) {
