@@ -45,7 +45,7 @@ public class FormProcessing extends HttpServlet {
 			custDao.insertNewCustomer(newCustomer);
 			
 			//vado su una pagina di conferma della registrazione
-			String jspPath = "/view/successfulRegistration.jsp";
+			String jspPath = "/successfulRegistration.jsp";
 			getServletContext().getRequestDispatcher(jspPath).forward(request, response);
 		} catch (SQLException e) {
 			System.out.println("*** Errore: " + e.getMessage() + " ***");

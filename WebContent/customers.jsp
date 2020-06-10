@@ -20,6 +20,9 @@
 	<c:forEach items="${customers}" var="customer">
 		<li id="${customer.id}">
 			<a href="#">${customer.firstName} ${customer.lastName} - ${customer.phoneNumber}</a>
+			<a href="customerDeletion?customerID=${customer.id}">
+				<button>Delete</button>
+			</a>
 		</li>
 	</c:forEach>
 </ul>

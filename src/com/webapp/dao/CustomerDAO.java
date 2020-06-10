@@ -100,6 +100,23 @@ public class CustomerDAO {
 	}
 	
 	/**
+	 * Elimina un customer dal DB
+	 * @param customerID id del customer da eliminare
+	 * @throws SQLException 
+	 */
+	public void deleteCustomer(String customerID) throws SQLException {
+		openNewConnection();
+		
+		String query = "DELETE FROM customer WHERE cust_id=?";
+		PreparedStatement statement = getNewStatement(query);
+		statement.setString(1, customerID);
+		
+		statement.execute();
+		
+		connection.close();
+	}
+	
+	/**
 	 * Apre una nuova connessione
 	 * @throws SQLException 
 	 */

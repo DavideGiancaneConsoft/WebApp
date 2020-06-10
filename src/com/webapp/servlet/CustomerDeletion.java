@@ -14,29 +14,36 @@ import com.webapp.bean.Customer;
 import com.webapp.dao.CustomerDAO;
 
 /**
- * Servlet che gestisce la richiesta del client di ricevere 
- * la lista dei customers
+ * Servlet implementation class CustomerDeletion
  */
-@WebServlet("/customersList")
-public class CustomersList extends HttpServlet {
+@WebServlet("/customerDeletion")
+public class CustomerDeletion extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private CustomerDAO custDao;
-       
-    public CustomersList() {super();}
+   
+    public CustomerDeletion() {
+        super();
+    }
     
     @Override
     public void init() throws ServletException {
     	super.init();
     	custDao = CustomerDAO.getInstance();
     }
-
+    
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//Prendo l'ID del customer da eliminare
+		String customerID = request.getParameter("customerID");
+		
 		try {
-			//Prendo la lista dei customer
+			//Elimino il customer dal DB
+			custDao.deleteCustomer(customerID);
+			
+			//Ricarico la lista dei customer aggiornata
 			Collection<Customer> customers = custDao.readCustomers();
 			request.setAttribute("customers", customers);
 			
-			//Forward verso la JSP
+			//Passo la lista aggiornata alla JSP
 			String jspPath = "/customers.jsp";
 			getServletContext().getRequestDispatcher(jspPath).forward(request, response);
 		} catch (SQLException e) {
