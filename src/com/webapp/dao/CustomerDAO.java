@@ -9,7 +9,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import com.webapp.servlet.Customer;
+import com.webapp.bean.Customer;
 
 /**
  * Classe singleton che implementa le operazioni CRUD

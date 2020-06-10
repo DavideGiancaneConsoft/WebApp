@@ -1,4 +1,4 @@
-package com.webapp.servlet;
+package com.webapp.bean;
 
 import java.io.Serializable;
 

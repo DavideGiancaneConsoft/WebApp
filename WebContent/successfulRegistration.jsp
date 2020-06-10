@@ -4,18 +4,12 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Customer details</title>
+<title>Registration completed</title>
 </head>
 
 <body>
-<label>Name: </label>
-${customer.firstName} <br>
-
-<label>Last name: </label>
-${customer.lastName} <br>
-
-<label>Phone number: </label>
-${customer.phoneNumber}
+	<h1>New customer registered!</h1>
+	<a href="index.html">Back to home</a>
 </body>
 
 </html>
