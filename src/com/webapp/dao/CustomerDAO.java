@@ -68,7 +68,8 @@ public class CustomerDAO {
 			String first_name = resultSet.getString(ColumnNames.firstName.toString());
 			String last_name = resultSet.getString(ColumnNames.lastName.toString());
 			String phone_number = resultSet.getString(ColumnNames.phoneNumber.toString());
-			Customer cust = new Customer(first_name, last_name, phone_number);
+			String id = resultSet.getString(ColumnNames.id.toString());
+			Customer cust = new Customer(first_name, last_name, phone_number, id);
 			
 			customers.add(cust);
 		}
@@ -92,6 +93,7 @@ public class CustomerDAO {
 		statement.setString(1, customer.getFirstName());
 		statement.setString(2, customer.getLastName());
 		statement.setString(3, customer.getPhoneNumber());
+
 		statement.executeUpdate();
 		
 		connection.close();
@@ -123,7 +125,11 @@ public class CustomerDAO {
 	 *
 	 */
 	private enum ColumnNames{
-		firstName("first_name"), lastName("last_name"), phoneNumber("phone");
+		firstName("first_name"),
+		lastName("last_name"), 
+		phoneNumber("phone"),
+		id("cust_id");
+		
 		private String columnName;
 		
 		private ColumnNames(String name) {

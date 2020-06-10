@@ -8,15 +8,18 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Customers</title>
+<script type="text/javascript" src="js/actions.js"></script>
 </head>
 
 <body>
 <h3>Customers List</h3>
 
-<ul>
+<input type="text" id="myInput" onkeyup="filterList()" placeholder="Search for names...">
+
+<ul id="myCustomers">
 	<c:forEach items="${customers}" var="customer">
-		<li>
-		${customer.firstName} ${customer.lastName} - ${customer.phoneNumber}
+		<li id="${customer.id}">
+			<a href="#">${customer.firstName} ${customer.lastName} - ${customer.phoneNumber}</a>
 		</li>
 	</c:forEach>
 </ul>

@@ -38,7 +38,7 @@ public class CustomersList extends HttpServlet {
 			request.setAttribute("customers", customers);
 			
 			//Forward verso la JSP
-			String jspPath = "/customers.jsp";
+			String jspPath = "/view/customers.jsp";
 			getServletContext().getRequestDispatcher(jspPath).forward(request, response);
 		} catch (SQLException e) {
 			System.out.println("*** Errore: " + e.getMessage() + " ***");
