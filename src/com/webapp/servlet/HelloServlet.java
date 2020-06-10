@@ -14,7 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class HelloServlet
+ * Servlet che risponde alla richiesta http get "HelloServlet"
+ * interrogando un db con la tabella "customer" e stampando a video,
+ * tramite JSP, l'unica riga presente
  */
 @WebServlet("/HelloServlet")
 public class HelloServlet extends HttpServlet {
@@ -55,7 +57,7 @@ public class HelloServlet extends HttpServlet {
 	 * Legge l'unico customer nella tabella "customer" del database "test
 	 * @return il customer presente nel ResultSet
 	 * @throws SQLException se ci sono errori di connessione o nella query
-	 * @throws ClassNotFoundException 
+	 * @throws ClassNotFoundException se non trova la classe del Driver jdbc
 	 */
 	private Customer readCustomerFromDB() throws SQLException, ClassNotFoundException{
 		//Carico il Driver JDBC
@@ -74,7 +76,7 @@ public class HelloServlet extends HttpServlet {
 		//mi posizionono sulla tupla che mi aspetto di ottenere
 		resultSet.first();
 		
-		//Prelevo i dati e avvaloro il bean
+		//Prelevo i dati dalle colonne e avvaloro il bean
 		String first_name = resultSet.getString(ColumnNames.firstName.toString());
 		String last_name = resultSet.getString(ColumnNames.lastName.toString());
 		String phone_number = resultSet.getString(ColumnNames.phoneNumber.toString());
