@@ -1,7 +1,6 @@
 package com.webapp.servlet;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Collection;
 
 import javax.servlet.ServletException;

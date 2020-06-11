@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="ISO-8859-1">
-<title>Insert new Customer</title>
+	<meta charset="ISO-8859-1">
+	<title>Insert new Customer</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script type="text/javascript" src="js/actions.js"></script>
 </head>
 <body>
 
 <h3>New customer form</h3>
 
 <!-- Form di inserimento dati di un customer -->
-<form action="formProcessing" method="post">
+<form id="registrationForm" action="formProcessing" method="post">
 <label>First name: </label>
 <input type="text" name="firstName">
 <br>
@@ -22,14 +24,49 @@
 <input type="text" name="phoneNumber">
 <br>	
 
+<label for="region">Region: </label>
+<select id="region" name="region" form="registrationForm">
+	<option disabled="disabled" selected="selected">--- Select region ---</option>
+	<option value="Puglia">Puglia</option>
+	<option value="Lombardia">Lombardia</option>
+	<option value="Piemonte">Piemonte</option>
+</select> <br>
+
+<label for=city>City: </label>
+<select id="city" name="city" form="registrationForm">
+	<option disabled="disabled" selected="selected">--- No city ---</option>
+</select><br>
+
 <input type="submit" value="Register">
 </form>
 
-<!--  CON JQUERY E JAVASCRIPT FARE UNA TENDINA CON REGIONI E PROVINCIA CHE COMPAIONO DI CONSEGUENZA
-- L'utente sceglie regione e provincia
-- Nella pagina di riepilogo devo vedere regione e provincia
-
- -->
-
+ <!-- script per elaborare le select-->
+	<script>
+		var allCities = {
+			"Puglia": ["Taranto", "Bari", "Brindisi", "Legge", "Foggia"],
+			"Lombardia": ["Bergamo", "Brescia", "Como", "Cremona", "Mantova", "Milano", "Pavia", "Sondrio"],
+			"Piemonte": ["Alessandria", "Asti", "Biella", "Cuneo", "Novara", "Torino", "Vercelli"]
+		}; 
+		
+		$(document).ready(function(){
+			$("#region").change(function(event){
+				$("#city").empty();
+				var choosen = event.target.value;
+				var regionCities = allCities[choosen];
+				
+				/*
+					Per ogni provincia nell'array costruisco il tag html che desidero
+					aggiungendoci il contenuto testuale (province) e lo appendo 
+					alla select identificata da #province
+				*/
+				for(var i in regionCities){
+					var city = regionCities[i];
+					var optHTML = "<option value='" + city + "'></option>"; 
+					var option = $(optHTML).text(city);
+					$("#city").append(option);
+				}
+			});
+		});
+	</script>
 </body>
 </html>
