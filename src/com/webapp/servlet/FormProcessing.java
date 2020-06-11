@@ -36,9 +36,11 @@ public class FormProcessing extends HttpServlet {
 		String firstName = request.getParameter("firstName");
 		String lastName = request.getParameter("lastName");
 		String phoneNumber = request.getParameter("phoneNumber");
+		String region = request.getParameter("region");
+		String city = request.getParameter("city");
 		
 		//Istanzio un customer
-		Customer newCustomer = new Customer(firstName, lastName, phoneNumber);
+		Customer newCustomer = new Customer(firstName, lastName, phoneNumber, region, city);
 		
 		String jspPath = null;
 		

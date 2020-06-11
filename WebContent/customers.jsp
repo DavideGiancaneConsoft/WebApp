@@ -19,10 +19,18 @@
 <ul id="myCustomers">
 	<c:forEach items="${customers}" var="customer">
 		<li id="${customer.id}">
-			<a href="#">${customer.firstName} ${customer.lastName} - ${customer.phoneNumber}</a>
-			<a href="customerDeletion?customerID=${customer.id}">
-				<button>Delete</button>
-			</a>
+			<div>
+				<a href="#">
+					${customer.firstName} ${customer.lastName} (${customer.region},${customer.city})<br>
+					${customer.phoneNumber}<br>
+				</a>
+			</div>
+			<div>
+				<!-- todo: prova con ajax -->
+				<a href="customerDeletion?customerID=${customer.id}">
+					<button>Delete</button>
+				</a>
+			</div>
 		</li>
 	</c:forEach>
 </ul>
