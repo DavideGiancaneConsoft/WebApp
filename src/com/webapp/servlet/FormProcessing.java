@@ -1,7 +1,6 @@
 package com.webapp.servlet;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.webapp.bean.Customer;
 import com.webapp.dao.CustomerDAO;
+import com.webapp.dao.DaoExceptions;
 
 /**
  * Servlet implementation class FormProcessing
@@ -40,14 +40,24 @@ public class FormProcessing extends HttpServlet {
 		//Istanzio un customer
 		Customer newCustomer = new Customer(firstName, lastName, phoneNumber);
 		
+		String jspPath = null;
+		
 		try {
 			//Inserisco l'oggetto nel DB
 			custDao.insertNewCustomer(newCustomer);
 			
 			//vado su una pagina di conferma della registrazione
-			String jspPath = "/successfulRegistration.jsp";
+			jspPath = "/successfulRegistration.jsp";
 			getServletContext().getRequestDispatcher(jspPath).forward(request, response);
-		} catch (SQLException e) {
+		
+		} catch (DaoExceptions e) {
+			//Se si verificano errori predispongo una JSP di errore
+			jspPath = "/error.jsp";
+			String errorMessage = "Something went wrong with the database. Try again!";
+			
+			ServletUtils.forwardInternalServerError(request, response, getServletContext(), errorMessage);
+			
+			//log dell'errore
 			System.out.println("*** Errore: " + e.getMessage() + " ***");
 		}
 	}

@@ -18,9 +18,12 @@ import com.webapp.bean.Customer;
 public class CustomerDAO {
 	
 	private static CustomerDAO instance;
-	private Connection connection;
 	private Collection<Customer> cache;
 	private boolean isModified;
+	
+	private Connection connection;
+	private ResultSet resultSet;
+	private PreparedStatement statement;
 	
 	//Costanti per l'accesso al db
 	private static final String DB_URI = "jdbc:mysql://localhost/test?serverTimezone=UTC";
@@ -52,42 +55,44 @@ public class CustomerDAO {
 	 * Legge tutti i customer presenti nella cache. 
 	 * Se la cache è vuota interroga al db, altrimenti ritorna direttamente i customer nella cache
 	 * @return una collection con tutti i customer
-	 * @throws SQLException se si verificando problemi di connessione o interrogazione
+	 * @throws DaoExceptions se si verificano problemi di interrogazione o di connessione
 	 */
-	public Collection<Customer> readCustomers() throws SQLException{
+	public Collection<Customer> readCustomers() throws DaoExceptions{
 		if(cache == null || isModified) {
-			//Preparo la collection
-			Collection<Customer> customers = new LinkedList<Customer>();
-			
-			//Apro la connessione
-			openNewConnection();
-			
-			//Eseguo la query di select
-			String query = "SELECT * FROM customer";
-			PreparedStatement statement = getNewStatement(query);
-			statement.execute();
-			
-			//Popolo la collection con i vari customer
-			ResultSet resultSet = statement.getResultSet();
-			
-			while(resultSet.next()) {
-				String first_name = resultSet.getString(ColumnNames.firstName.toString());
-				String last_name = resultSet.getString(ColumnNames.lastName.toString());
-				String phone_number = resultSet.getString(ColumnNames.phoneNumber.toString());
-				String id = resultSet.getString(ColumnNames.id.toString());
-				Customer cust = new Customer(first_name, last_name, phone_number, id);
+			try {
+				//Preparo la collection
+				Collection<Customer> customers = new LinkedList<Customer>();
+				//Apro la connessione
+				openNewConnection();
 				
-				customers.add(cust);
+				//Eseguo la query di select
+				String query = "SELECT * FROM customer";
+				statement = getNewStatement(query);
+				statement.execute();
+				
+				//Popolo la collection con i vari customer
+				resultSet = statement.getResultSet();
+				
+				while(resultSet.next()) {
+					String first_name = resultSet.getString(ColumnNames.firstName.toString());
+					String last_name = resultSet.getString(ColumnNames.lastName.toString());
+					String phone_number = resultSet.getString(ColumnNames.phoneNumber.toString());
+					String id = resultSet.getString(ColumnNames.id.toString());
+					Customer cust = new Customer(first_name, last_name, phone_number, id);
+					
+					customers.add(cust);
+				}
+
+				cache = customers;
+			} catch (SQLException e) {
+				throw new DaoExceptions(e.getMessage());
+			} finally {
+				try {
+					resultSet.close();
+					statement.close();
+					connection.close();
+				} catch (Exception ignored) {}
 			}
-			
-			//TODO: GESTIRE L'ECCEZIONE QUI DENTRO CHIUDENDO LA CONNESSIONE ANZICHè RILANCIARLA
-			//USARE UNA FINALLY
-			
-			//Chiudo la connessione 
-			connection.close();
-			
-			//Cacho i customers
-			cache = customers;
 		}
 	
 		return cache;	
@@ -96,43 +101,57 @@ public class CustomerDAO {
 	/**
 	 * Inserisce un nuovo customer all'interno del db
 	 * @param customer nuovo customer da inserire
+	 * @throws DaoExceptions se si verificano problemi di connessione o interrogazione
 	 * @throws SQLException
 	 */
-	public void insertNewCustomer(Customer customer) throws SQLException {
-		openNewConnection();
-		
-		String query = "INSERT INTO customer (first_name, last_name, phone) VALUES (?, ?, ?)";
-		PreparedStatement statement = getNewStatement(query);
-		statement.setString(1, customer.getFirstName());
-		statement.setString(2, customer.getLastName());
-		statement.setString(3, customer.getPhoneNumber());
+	public void insertNewCustomer(Customer customer) throws DaoExceptions{
+		try {
+			openNewConnection();
+			
+			String query = "INSERT INTO customer (first_name, last_name, phone) VALUES (?, ?, ?)";
+			PreparedStatement statement = getNewStatement(query);
+			statement.setString(1, customer.getFirstName());
+			statement.setString(2, customer.getLastName());
+			statement.setString(3, customer.getPhoneNumber());
 
-		statement.executeUpdate();
-		
-		connection.close();
-		
-		//Aggiorno il flag, indicando che il DB è stato modificato 
-		isModified = true;
+			statement.executeUpdate();
+
+			//Aggiorno il flag, indicando che il DB è stato modificato 
+			isModified = true;
+		} catch (SQLException e) {
+			throw new DaoExceptions(e.getMessage());
+		} finally {
+			try {
+				statement.close();
+				connection.close();
+			} catch (Exception ignored) {}
+		}
 	}
 	
 	/**
 	 * Elimina un customer dal DB
 	 * @param customerID id del customer da eliminare
-	 * @throws SQLException 
+	 * @throws DaoExceptions 
 	 */
-	public void deleteCustomer(String customerID) throws SQLException {
-		openNewConnection();
-		
-		String query = "DELETE FROM customer WHERE cust_id=?";
-		PreparedStatement statement = getNewStatement(query);
-		statement.setString(1, customerID);
-		
-		statement.executeUpdate();
-		
-		connection.close();
-		
-		//Aggiorno il flag di modifica
-		isModified = true;
+	public void deleteCustomer(String customerID) throws DaoExceptions{
+		try {
+			openNewConnection();
+			String query = "DELETE FROM customer WHERE cust_id=?";
+		    statement = getNewStatement(query);
+			statement.setString(1, customerID);
+			
+			statement.executeUpdate();
+	
+			//Aggiorno il flag di modifica
+			isModified = true;
+		} catch (SQLException e) {
+			throw new DaoExceptions(e.getMessage());
+		} finally {
+			try {
+				statement.close();
+				connection.close();
+			} catch (Exception ignored) {}
+		}
 	}
 	
 	/**

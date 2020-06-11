@@ -1,7 +1,6 @@
 package com.webapp.servlet;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Collection;
 
 import javax.servlet.ServletException;
@@ -12,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.webapp.bean.Customer;
 import com.webapp.dao.CustomerDAO;
+import com.webapp.dao.DaoExceptions;
 
 /**
  * Servlet che gestisce la richiesta del client di ricevere 
@@ -31,16 +31,24 @@ public class CustomersList extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String jspPath = null;
 		try {
 			//Prendo la lista dei customer
 			Collection<Customer> customers = custDao.readCustomers();
 			request.setAttribute("customers", customers);
 			
 			//Forward verso la JSP
-			String jspPath = "/customers.jsp";
+			jspPath = "/customers.jsp";
 			getServletContext().getRequestDispatcher(jspPath).forward(request, response);
-		} catch (SQLException e) {
-			//TODO: PREDISPORRE UNA JSP DI ERRORE
+		
+		} catch (DaoExceptions e) {
+			//Se si verificano errori predispongo una JSP di errore
+			jspPath = "/error.jsp";
+			String errorMessage = "Something went wrong with the database. Try again!";
+			
+			ServletUtils.forwardInternalServerError(request, response, getServletContext(), errorMessage);
+			
+			//log dell'errore
 			System.out.println("*** Errore: " + e.getMessage() + " ***");
 		}
 	}

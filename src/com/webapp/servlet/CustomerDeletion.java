@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.webapp.bean.Customer;
 import com.webapp.dao.CustomerDAO;
+import com.webapp.dao.DaoExceptions;
 
 /**
  * Servlet implementation class CustomerDeletion
@@ -34,7 +35,7 @@ public class CustomerDeletion extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//Prendo l'ID del customer da eliminare
 		String customerID = request.getParameter("customerID");
-		
+		String jspPath = null;
 		try {
 			//Elimino il customer dal DB
 			custDao.deleteCustomer(customerID);
@@ -43,12 +44,19 @@ public class CustomerDeletion extends HttpServlet {
 			Collection<Customer> customers = custDao.readCustomers();
 			request.setAttribute("customers", customers);
 			
+			//-----------------------------------------
+			//FIXME: *** provare con chiamata AJAX con jquery ***
+			//-----------------------------------------
+			
 			//Passo la lista aggiornata alla JSP
-			//TODO: *** provare con chiamata AJAX ***
-			//TODO: PROVARE AD USARE JQUERY
-			String jspPath = "/customers.jsp";
+		    jspPath = "/customers.jsp";
 			getServletContext().getRequestDispatcher(jspPath).forward(request, response);
-		} catch (SQLException e) {
+		} catch (DaoExceptions e) {
+			//Se si verificano errori predispongo una JSP di errore
+			String errorMessage = "Something went wrong with the database. Try again!";
+			ServletUtils.forwardInternalServerError(request, response, getServletContext(), errorMessage);
+			
+			//log dell'errore
 			System.out.println("*** Errore: " + e.getMessage() + " ***");
 		}
 	}
