@@ -59,12 +59,11 @@
 					aggiungendoci il contenuto testuale (province) e lo appendo 
 					alla select identificata da #province
 				*/
-				for(var i in regionCities){
-					var city = regionCities[i];
+				$.each(regionCities, (_, city) => {
 					var optHTML = "<option value='" + city + "'></option>"; 
 					var option = $(optHTML).text(city);
 					$("#city").append(option);
-				}
+				});
 			});
 		});
 	</script>
