@@ -23,7 +23,7 @@ public class CustomerDAO {
 	private boolean isModified;
 	
 	//Costanti per l'accesso al db
-	private static final String DB_URI = "jdbc:mysql://localhost/test";
+	private static final String DB_URI = "jdbc:mysql://localhost/test?serverTimezone=UTC";
 	private static final String DB_USER = "root";
 	private static final String DB_PSW = "consoft";
 	
@@ -80,7 +80,10 @@ public class CustomerDAO {
 				customers.add(cust);
 			}
 			
-			//Chiudo la connessione
+			//TODO: GESTIRE L'ECCEZIONE QUI DENTRO CHIUDENDO LA CONNESSIONE ANZICHè RILANCIARLA
+			//USARE UNA FINALLY
+			
+			//Chiudo la connessione 
 			connection.close();
 			
 			//Cacho i customers

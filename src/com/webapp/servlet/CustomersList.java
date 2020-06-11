@@ -40,6 +40,7 @@ public class CustomersList extends HttpServlet {
 			String jspPath = "/customers.jsp";
 			getServletContext().getRequestDispatcher(jspPath).forward(request, response);
 		} catch (SQLException e) {
+			//TODO: PREDISPORRE UNA JSP DI ERRORE
 			System.out.println("*** Errore: " + e.getMessage() + " ***");
 		}
 	}

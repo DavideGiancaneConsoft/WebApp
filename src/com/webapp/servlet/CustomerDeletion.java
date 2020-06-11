@@ -44,6 +44,8 @@ public class CustomerDeletion extends HttpServlet {
 			request.setAttribute("customers", customers);
 			
 			//Passo la lista aggiornata alla JSP
+			//TODO: *** provare con chiamata AJAX ***
+			//TODO: PROVARE AD USARE JQUERY
 			String jspPath = "/customers.jsp";
 			getServletContext().getRequestDispatcher(jspPath).forward(request, response);
 		} catch (SQLException e) {
