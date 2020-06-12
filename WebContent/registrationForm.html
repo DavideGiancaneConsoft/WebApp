@@ -42,6 +42,7 @@
 
  <!-- script per elaborare le select-->
 	<script>
+		//Dizionario k=regione, V=elenco delle città nella regione
 		var allCities = {
 			"Puglia": ["Taranto", "Bari", "Brindisi", "Legge", "Foggia"],
 			"Lombardia": ["Bergamo", "Brescia", "Como", "Cremona", "Mantova", "Milano", "Pavia", "Sondrio"],
@@ -56,15 +57,22 @@
 				
 				/*
 					Per ogni provincia nell'array costruisco il tag html che desidero
-					aggiungendoci il contenuto testuale (province) e lo appendo 
+					aggiungendoci il contenuto testuale (province) e lo appendo	 
 					alla select identificata da #province
 				*/
-				for(var i in regionCities){
-					var city = regionCities[i];
+				$.each(regionCities, (_, city) => {
 					var optHTML = "<option value='" + city + "'></option>"; 
 					var option = $(optHTML).text(city);
 					$("#city").append(option);
-				}
+				});
+			});
+			
+			$("input, select").click(function(){
+				$(this).css("background-color", "yellow");
+			});
+
+			$("input, select").blur(function(){
+				$(this).css("background-color", "white");
 			});
 		});
 	</script>
