@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Objects;
 
 import com.webapp.bean.Customer;
 
@@ -78,8 +79,15 @@ public class CustomerDAO {
 					String last_name = resultSet.getString(ColumnNames.lastName.toString());
 					String phone_number = resultSet.getString(ColumnNames.phoneNumber.toString());
 					String id = resultSet.getString(ColumnNames.id.toString());
-					Customer cust = new Customer(first_name, last_name, phone_number, id);
+					String region = resultSet.getString(ColumnNames.region.toString());
+					String city = resultSet.getString(ColumnNames.city.toString());
 					
+					//Se region e city sono null (può succedere) li avvaloro come stringa vuota
+					region = Objects.toString(region, "");
+					city = Objects.toString(city, "");
+					
+					//Costruisco il customer e lo aggiungo alla collection
+					Customer cust = new Customer(first_name, last_name, phone_number, id, region, city);
 					customers.add(cust);
 				}
 
@@ -108,12 +116,15 @@ public class CustomerDAO {
 		try {
 			openNewConnection();
 			
-			String query = "INSERT INTO customer (first_name, last_name, phone) VALUES (?, ?, ?)";
+			String query = "INSERT INTO customer (first_name, last_name, phone, region, city)"
+					+ " VALUES (?, ?, ?, ?, ?)";
 			PreparedStatement statement = getNewStatement(query);
 			statement.setString(1, customer.getFirstName());
 			statement.setString(2, customer.getLastName());
 			statement.setString(3, customer.getPhoneNumber());
-
+			statement.setString(4, customer.getRegion());
+			statement.setString(5, customer.getCity());
+			
 			statement.executeUpdate();
 
 			//Aggiorno il flag, indicando che il DB è stato modificato 
@@ -183,7 +194,9 @@ public class CustomerDAO {
 		firstName("first_name"),
 		lastName("last_name"), 
 		phoneNumber("phone"),
-		id("cust_id");
+		id("cust_id"),
+		region("region"),
+		city("city");
 		
 		private String columnName;
 		
