@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Objects;
 
 import com.webapp.bean.Customer;
 
@@ -81,8 +82,12 @@ public class CustomerDAO {
 					String region = resultSet.getString(ColumnNames.region.toString());
 					String city = resultSet.getString(ColumnNames.city.toString());
 					
-					Customer cust = new Customer(first_name, last_name, phone_number, id, region, city);
+					//Se region e city sono null (può succedere) li avvaloro come stringa vuota
+					region = Objects.toString(region, "");
+					city = Objects.toString(city, "");
 					
+					//Costruisco il customer e lo aggiungo alla collection
+					Customer cust = new Customer(first_name, last_name, phone_number, id, region, city);
 					customers.add(cust);
 				}
 
