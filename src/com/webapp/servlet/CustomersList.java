@@ -48,7 +48,7 @@ public class CustomersList extends HttpServlet {
 			ServletUtils.forwardInternalServerError(request, response, getServletContext(), errorMessage);
 			
 			//log dell'errore
-			System.out.println("*** Errore: " + e.getMessage() + " ***");
+			System.err.println("*** Errore: " + e.getMessage() + " ***");
 		}
 	}
 }
