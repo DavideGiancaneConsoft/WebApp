@@ -54,7 +54,6 @@ public class FormProcessing extends HttpServlet {
 		
 		} catch (DaoExceptions e) {
 			//Se si verificano errori predispongo una JSP di errore
-			jspPath = "/error.jsp";
 			String errorMessage = "Something went wrong with the database. Try again!";
 			
 			ServletUtils.forwardInternalServerError(request, response, getServletContext(), errorMessage);

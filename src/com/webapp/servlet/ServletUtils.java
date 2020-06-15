@@ -32,7 +32,7 @@ class ServletUtils {
 		request.setAttribute("errorMessage", errorMessage);
 		response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
 		
-		//Forwarding verso la server di errore
+		//Forwarding verso la jsp di errore
 		context.getRequestDispatcher(jspErrorPath).forward(request, response);
 	}
 	
