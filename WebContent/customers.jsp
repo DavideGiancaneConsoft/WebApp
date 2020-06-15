@@ -6,7 +6,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="ISO-8859-1">
+<meta charset="UTF-8">
 <title>Customers</title>
 <script type="text/javascript" src="js/actions.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -42,8 +42,8 @@
 		var customerID = null;
 		//Al click sull'ancora di un list item...
 		$("li a").click(function(event){
-			//prendo l'id del customer che è stato inserito dinamicamente
-			customerID = event.target.getAttribute("id");
+			//prendo l'id del customer che ï¿½ stato inserito dinamicamente
+			customerID = $(this).attr("id");
 			var deleteButton = $("#deleteButton");
 			deleteButton.removeAttr("disabled"); //abilito il bottone
 			
