@@ -6,7 +6,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="ISO-8859-1">
+<meta charset="UTF-8">
 <title>Customers</title>
 <script type="text/javascript" src="js/actions.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -18,10 +18,7 @@
 <a href="index.html">Home</a> <br><br>
 <input type="text" id="myInput" onkeyup="filterList()" placeholder="Search for names...">
 
-<!-- todo: prova con ajax -->
-<a href="customerDeletion?customerID=">
-	<button id="deleteButton" disabled="disabled">Delete</button>
-</a>
+<button id="deleteButton" disabled="disabled">Delete</button>
 
 <ul id="myCustomers">
 	<c:forEach items="${customers}" var="customer">
@@ -39,18 +36,37 @@
 <!-- script per abilitare il bottone quando si clicca su un customer da rimuovere -->
 <script>
 	$(document).ready(function(){
-		var customerID = null;
+		var id = null;
+		var deleteButton = null;
 		//Al click sull'ancora di un list item...
 		$("li a").click(function(event){
-			//prendo l'id del customer che è stato inserito dinamicamente
-			customerID = event.target.getAttribute("id");
-			var deleteButton = $("#deleteButton");
+			//prendo l'id del customer che � stato inserito dinamicamente
+			id = $(this).attr("id");
+			deleteButton = $("#deleteButton");
 			deleteButton.removeAttr("disabled"); //abilito il bottone
-			
-			//aggiungo al link predisposto sul sull'ancora del bottone l'ID del customer
-			var anchor = deleteButton.parent("a");
-			var completeLink = anchor.attr("href") + customerID;
-			deleteButton.parent("a").attr("href", completeLink);
+
+			//Salvo l'ID del customer come dato associato al bottone
+			//(e lo recupero nella chiamata ajax)
+			deleteButton.data("customerID", id);
+		});
+		
+
+		//Chiamata ajax per eliminare la riga
+		$("#deleteButton").click(function(event){
+			event.preventDefault();
+			$.ajax({
+				url: "customerDeletion",
+				data: {
+					customerID: $(this).data("customerID")
+					},
+				type: "POST",
+				async: "false"
+			}).done(function(){
+				liToRemove = $("li a#" + id).parents("li.customer");
+				liToRemove.remove();
+			}).fail(function(xhr, status, error){
+				alert("Errore");
+			});		
 		});
 	});
 </script>
