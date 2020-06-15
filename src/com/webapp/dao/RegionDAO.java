@@ -8,18 +8,12 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import com.webapp.bean.Customer;
+import com.webapp.bean.City;
+import com.webapp.bean.Region;
 
-/**
- * Classe singleton che implementa le operazioni CRUD
- * @author davide.giancane
- *
- */
-public class CustomerDAO {
-	
-	private static CustomerDAO instance;
-	private Collection<Customer> cache;
-	private boolean isModified;
+public class RegionDAO {
+	private static RegionDAO instance;
+	private Collection<Region> cache;
 	
 	private Connection connection;
 	private ResultSet resultSet;
@@ -30,19 +24,18 @@ public class CustomerDAO {
 	private static final String DB_USER = "root";
 	private static final String DB_PSW = "consoft";
 	
-	private CustomerDAO() {}
+	private RegionDAO() {}
 	
 	/**
 	 * Ritorna il singleton inizializzando il driver JDBC
 	 * @return il singleton della classe
 	 */
-	public static CustomerDAO getInstance() {
+	public static RegionDAO getInstance() {
 		if(instance == null) {
 			try {
 				Class.forName("com.mysql.cj.jdbc.Driver");
-				instance = new CustomerDAO();
+				instance = new RegionDAO();
 				instance.cache = null;
-				instance.isModified = false;
 			} catch (ClassNotFoundException e) {
 				System.err.println("!!! Driver non caricato !!!");
 			}
@@ -52,21 +45,21 @@ public class CustomerDAO {
 	}
 	
 	/**
-	 * Legge tutti i customer presenti nella cache. 
+	 * Legge tuttie le regioni dal db 
 	 * Se la cache è vuota interroga al db, altrimenti ritorna direttamente i customer nella cache
-	 * @return una collection con tutti i customer
+	 * @return una collection con tutte le regioni
 	 * @throws DaoExceptions se si verificano problemi di interrogazione o di connessione
 	 */
-	public Collection<Customer> readCustomers() throws DaoExceptions{
-		if(cache == null || isModified) {
+	public Collection<Region> getRegions() throws DaoExceptions{
+		if(cache == null) {
 			try {
 				//Preparo la collection
-				Collection<Customer> customers = new LinkedList<Customer>();
+				Collection<Region> regions = new LinkedList<Region>();
 				//Apro la connessione
 				openNewConnection();
 				
 				//Eseguo la query di select
-				String query = "SELECT * FROM customers";
+				String query = "SELECT * FROM regions";
 				statement = getNewStatement(query);
 				statement.execute();
 				
@@ -74,18 +67,15 @@ public class CustomerDAO {
 				resultSet = statement.getResultSet();
 				
 				while(resultSet.next()) {
-					String first_name = resultSet.getString(ColumnNames.firstName.toString());
-					String last_name = resultSet.getString(ColumnNames.lastName.toString());
-					String phone_number = resultSet.getString(ColumnNames.phoneNumber.toString());
-					String id = resultSet.getString(ColumnNames.id.toString());
-					String city = resultSet.getString(ColumnNames.city.toString());
-										
+					int regionID = resultSet.getInt(ColumnNames.regionID.toString());
+					String regionName = resultSet.getString(ColumnNames.regionName.toString());
+	
 					//Costruisco il customer e lo aggiungo alla collection
-					Customer cust = new Customer(first_name, last_name, phone_number, id, city);
-					customers.add(cust);
+					Region region = new Region(regionID, regionName);
+					regions.add(region);
 				}
 
-				cache = customers;
+				cache = regions;
 			} catch (SQLException e) {
 				throw new DaoExceptions(e.getMessage());
 			} finally {
@@ -100,62 +90,43 @@ public class CustomerDAO {
 		return cache;	
 	}
 	
-	/**
-	 * Inserisce un nuovo customer all'interno del db
-	 * @param customer nuovo customer da inserire
-	 * @throws DaoExceptions se si verificano problemi di connessione o interrogazione
-	 * @throws SQLException
-	 */
-	public void insertNewCustomer(Customer customer) throws DaoExceptions{
+	public Collection<City> getCities(Region region) throws DaoExceptions{
 		try {
+			Collection<City> cities = new LinkedList<City>();
+			int regionID = region.getRegionID();
+			
 			openNewConnection();
 			
-			String query = "INSERT INTO customers (first_name, last_name, phone, city)"
-					+ " VALUES (?, ?, ?, ?)";
-			PreparedStatement statement = getNewStatement(query);
-			statement.setString(1, customer.getFirstName());
-			statement.setString(2, customer.getLastName());
-			statement.setString(3, customer.getPhoneNumber());
-			statement.setString(4, customer.getCity());
+			//Eseguo la query di select con join
+			String query = "SELECT (initials, city_name) FROM (regions join cities) "
+					+ "where (region.reg_id = cities.region and region.reg_id = ? ";
+			statement = getNewStatement(query);
+			statement.setInt(1, regionID);
+			statement.execute();
 			
-			statement.executeUpdate();
-
-			//Aggiorno il flag, indicando che il DB è stato modificato 
-			isModified = true;
+			//Popolo la collection con i vari customer
+			resultSet = statement.getResultSet();
+			
+			while(resultSet.next()) {
+				char[] initials = resultSet.getString("initials").toCharArray();
+				String cityName = resultSet.getString("city_name");
+		
+				//Costruisco il customer e lo aggiungo alla collection
+				City c = new City(initials, cityName, regionID);
+				cities.add(c);
+			}
+			
+			return cities;
+		
 		} catch (SQLException e) {
 			throw new DaoExceptions(e.getMessage());
 		} finally {
 			try {
+				resultSet.close();
 				statement.close();
 				connection.close();
 			} catch (Exception ignored) {}
-		}
-	}
-	
-	/**
-	 * Elimina un customer dal DB
-	 * @param customerID id del customer da eliminare
-	 * @throws DaoExceptions 
-	 */
-	public void deleteCustomer(String customerID) throws DaoExceptions{
-		try {
-			openNewConnection();
-			String query = "DELETE FROM customers WHERE cust_id=?";
-		    statement = getNewStatement(query);
-			statement.setString(1, customerID);
-			
-			statement.executeUpdate();
-	
-			//Aggiorno il flag di modifica
-			isModified = true;
-		} catch (SQLException e) {
-			throw new DaoExceptions(e.getMessage());
-		} finally {
-			try {
-				statement.close();
-				connection.close();
-			} catch (Exception ignored) {}
-		}
+		}		
 	}
 	
 	/**
@@ -184,11 +155,8 @@ public class CustomerDAO {
 	 *
 	 */
 	private enum ColumnNames{
-		firstName("first_name"),
-		lastName("last_name"), 
-		phoneNumber("phone"),
-		id("cust_id"),
-		city("city");
+		regionID("reg_id"),
+		regionName("region_name");
 		
 		private String columnName;
 		

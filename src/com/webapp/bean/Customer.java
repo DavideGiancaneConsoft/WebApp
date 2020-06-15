@@ -5,29 +5,26 @@ import java.io.Serializable;
 public class Customer implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	private String firstName, lastName, phoneNumber, id, region, city;
+	private String firstName, lastName, phoneNumber, id, city;
 	
 	public Customer() {}
 	
 	public Customer(String firstName, String lastName, String phoneNumber, 
-			String id, String region, String city) {
+			String id, String city) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phoneNumber = phoneNumber;
 		this.id = id;
-		this.region = region;
 		this.city = city;
 	}
 	
 	public Customer(String firstName,
 			String lastName, 
 			String phoneNumber,
-			String region,
 			String city) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phoneNumber = phoneNumber;
-		this.region = region;
 		this.city = city;
 	}
 
@@ -61,14 +58,6 @@ public class Customer implements Serializable {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public String getRegion() {
-		return region;
-	}
-
-	public void setRegion(String region) {
-		this.region = region;
 	}
 
 	public String getCity() {

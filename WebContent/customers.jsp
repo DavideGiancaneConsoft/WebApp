@@ -25,7 +25,7 @@
 		<li class="customer">
 			<div>
 				<a href="#" id="${customer.id}">
-					${customer.firstName} ${customer.lastName} (${customer.region},${customer.city})<br>
+					${customer.firstName} ${customer.lastName} (${customer.city})<br>
 					${customer.phoneNumber}<br>
 				</a>
 			</div>
