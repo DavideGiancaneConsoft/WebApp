@@ -65,7 +65,7 @@ public class CustomerDAO {
 				openNewConnection();
 				
 				//Eseguo la query di select
-				String query = "SELECT * FROM customers";
+				String query = "SELECT * FROM customer";
 				statement = getNewStatement(query);
 				statement.execute();
 				
@@ -109,7 +109,7 @@ public class CustomerDAO {
 		try {
 			openNewConnection();
 			
-			String query = "INSERT INTO customers (first_name, last_name, phone, city)"
+			String query = "INSERT INTO customer (first_name, last_name, phone, city)"
 					+ " VALUES (?, ?, ?, ?)";
 			PreparedStatement statement = getNewStatement(query);
 			statement.setString(1, customer.getFirstName());
@@ -139,7 +139,7 @@ public class CustomerDAO {
 	public void deleteCustomer(String customerID) throws DaoExceptions{
 		try {
 			openNewConnection();
-			String query = "DELETE FROM customers WHERE cust_id=?";
+			String query = "DELETE FROM customer WHERE cust_id=?";
 		    statement = getNewStatement(query);
 			statement.setString(1, customerID);
 			

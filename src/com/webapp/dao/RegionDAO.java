@@ -53,7 +53,7 @@ public class RegionDAO {
 				Collection<Region> regions = new LinkedList<Region>();
 				openNewConnection();
 				
-				String query = "SELECT * FROM regions";
+				String query = "SELECT * FROM region";
 				statement = getNewStatement(query);
 				statement.execute();
 				
@@ -91,7 +91,7 @@ public class RegionDAO {
 			
 			//Eseguo la query di select con join
 			String query = "SELECT initials, city_name FROM (regions JOIN cities) "
-					+ "WHERE (regions.reg_id=cities.region and regions.reg_id=?)";
+					+ "WHERE (region.reg_id=city.region and region.reg_id=?)";
 			
 			statement = getNewStatement(query);
 			statement.setInt(1, regionID);
