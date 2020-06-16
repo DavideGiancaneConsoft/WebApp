@@ -45,10 +45,9 @@ public class CustomersList extends HttpServlet {
 			//Se si verificano errori predispongo una JSP di errore
 			String errorMessage = "Something went wrong with the database. Try again!";
 			
-			ServletUtils.forwardInternalServerError(request, response, getServletContext(), errorMessage);
-			
 			//log dell'errore
 			System.err.println("*** Errore: " + e.getMessage() + " ***");
+			ServletUtils.forwardError(request, response, getServletContext(), errorMessage);			
 		}
 	}
 }

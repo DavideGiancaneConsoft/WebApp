@@ -25,7 +25,7 @@ class ServletUtils {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	static void forwardInternalServerError(HttpServletRequest request, HttpServletResponse response, 
+	static void forwardError(HttpServletRequest request, HttpServletResponse response, 
 			ServletContext context, String errorMessage) throws ServletException, IOException {
 		
 		//Imposto l'errore come attributo della richiesta e nella response
