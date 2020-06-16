@@ -1,3 +1,8 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="UTF-8"%>
+
+<%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -27,9 +32,9 @@
 <label for="region">Region: </label>
 <select id="region" name="region" form="registrationForm">
 	<option disabled="disabled" selected="selected">--- Select region ---</option>
-	<option value="Puglia">Puglia</option>
-	<option value="Lombardia">Lombardia</option>
-	<option value="Piemonte">Piemonte</option>
+	<c:forEach items="${regions}" var="region">
+		<option value="${region.regionID}">${region.regionName}</option>
+	</c:forEach>
 </select> <br>
 
 <label for=city>City: </label>
@@ -42,28 +47,31 @@
 
  <!-- script per elaborare le select-->
 	<script>
-		//Dizionario k=regione, V=elenco delle città nella regione
-		var allCities = {
-			"Puglia": ["Taranto", "Bari", "Brindisi", "Legge", "Foggia"],
-			"Lombardia": ["Bergamo", "Brescia", "Como", "Cremona", "Mantova", "Milano", "Pavia", "Sondrio"],
-			"Piemonte": ["Alessandria", "Asti", "Biella", "Cuneo", "Novara", "Torino", "Vercelli"]
-		}; 
-		
 		$(document).ready(function(){
 			$("#region").change(function(event){
+				//Cancello le citt� precedentemente avvalorate e prendo la regione selezionata
 				$("#city").empty();
-				var choosen = event.target.value;
-				var regionCities = allCities[choosen];
+				var targetRegion = event.target.value;
 				
-				/*
-					Per ogni provincia nell'array costruisco il tag html che desidero
-					aggiungendoci il contenuto testuale (province) e lo appendo	 
-					alla select identificata da #province
-				*/
-				$.each(regionCities, (_, city) => {
-					var optHTML = "<option value='" + city + "'></option>"; 
-					var option = $(optHTML).text(city);
-					$("#city").append(option);
+				//Chiamata AJAX per prelevare la lista delle citt� afferenti alla regione
+				$.ajax({
+					url: "registration",
+					data: {
+						regionID: targetRegion,
+						requestAction: "CitiesRequest"
+					},
+					type: "GET",
+					dataType: "json",
+					async: "false"
+				}).done(function(jsonCities){
+					$.each(jsonCities, function(index, city){
+						var initials = city.initials;
+						var optHTML = "<option value='" + initials[0]+initials[1] + "'></option>";
+						var option = $(optHTML).text(city.name)
+						$("#city").append(option);
+					})
+				}).fail(function(){
+					alert("Something went wrong!");
 				});
 			});
 			

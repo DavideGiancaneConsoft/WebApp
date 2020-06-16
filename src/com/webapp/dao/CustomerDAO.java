@@ -25,12 +25,18 @@ public class CustomerDAO {
 	private ResultSet resultSet;
 	private PreparedStatement statement;
 	
-	//Costanti per l'accesso al db
-	private static final String DB_URI = "jdbc:mysql://localhost/test?serverTimezone=UTC";
-	private static final String DB_USER = "root";
-	private static final String DB_PSW = "consoft";
+	private DBPropertiesManager dbPropertiesManager;
 	
-	private CustomerDAO() {}
+	private CustomerDAO() {
+		try {
+			cache = null;
+			isModified = false;
+			dbPropertiesManager = DBPropertiesManager.getInstance();
+			Class.forName(dbPropertiesManager.getJdbcDriver());
+		} catch (ClassNotFoundException e) {
+			System.err.println("!!! JDBC Driver not loaded !!!");
+		}
+	}
 	
 	/**
 	 * Ritorna il singleton inizializzando il driver JDBC
@@ -38,14 +44,7 @@ public class CustomerDAO {
 	 */
 	public static CustomerDAO getInstance() {
 		if(instance == null) {
-			try {
-				Class.forName("com.mysql.cj.jdbc.Driver");
-				instance = new CustomerDAO();
-				instance.cache = null;
-				instance.isModified = false;
-			} catch (ClassNotFoundException e) {
-				System.err.println("!!! Driver non caricato !!!");
-			}
+			instance = new CustomerDAO();
 		}
 			
 		return instance;
@@ -77,7 +76,7 @@ public class CustomerDAO {
 					String first_name = resultSet.getString(ColumnNames.firstName.toString());
 					String last_name = resultSet.getString(ColumnNames.lastName.toString());
 					String phone_number = resultSet.getString(ColumnNames.phoneNumber.toString());
-					String id = resultSet.getString(ColumnNames.id.toString());
+					int id = resultSet.getInt(ColumnNames.id.toString());
 					String city = resultSet.getString(ColumnNames.city.toString());
 										
 					//Costruisco il customer e lo aggiungo alla collection
@@ -163,6 +162,9 @@ public class CustomerDAO {
 	 * @throws SQLException 
 	 */
 	private void openNewConnection() throws SQLException {
+		String DB_URI = dbPropertiesManager.getDbURI();
+		String DB_USER = dbPropertiesManager.getUser();
+		String DB_PSW = dbPropertiesManager.getPsw();
 		connection = DriverManager.getConnection(DB_URI, DB_USER, DB_PSW);
 	}
 	
