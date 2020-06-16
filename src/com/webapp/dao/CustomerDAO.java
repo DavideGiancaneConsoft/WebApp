@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Objects;
 
 import com.webapp.bean.Customer;
 
@@ -26,12 +25,18 @@ public class CustomerDAO {
 	private ResultSet resultSet;
 	private PreparedStatement statement;
 	
-	//Costanti per l'accesso al db
-	private static final String DB_URI = "jdbc:mysql://localhost/test?serverTimezone=UTC";
-	private static final String DB_USER = "root";
-	private static final String DB_PSW = "consoft";
+	private DBPropertiesManager dbPropertiesManager;
 	
-	private CustomerDAO() {}
+	private CustomerDAO() {
+		try {
+			cache = null;
+			isModified = false;
+			dbPropertiesManager = DBPropertiesManager.getInstance();
+			Class.forName(dbPropertiesManager.getJdbcDriver());
+		} catch (ClassNotFoundException e) {
+			System.err.println("!!! JDBC Driver not loaded !!!");
+		}
+	}
 	
 	/**
 	 * Ritorna il singleton inizializzando il driver JDBC
@@ -39,14 +44,7 @@ public class CustomerDAO {
 	 */
 	public static CustomerDAO getInstance() {
 		if(instance == null) {
-			try {
-				Class.forName("com.mysql.cj.jdbc.Driver");
-				instance = new CustomerDAO();
-				instance.cache = null;
-				instance.isModified = false;
-			} catch (ClassNotFoundException e) {
-				System.err.println("!!! Driver non caricato !!!");
-			}
+			instance = new CustomerDAO();
 		}
 			
 		return instance;
@@ -78,16 +76,11 @@ public class CustomerDAO {
 					String first_name = resultSet.getString(ColumnNames.firstName.toString());
 					String last_name = resultSet.getString(ColumnNames.lastName.toString());
 					String phone_number = resultSet.getString(ColumnNames.phoneNumber.toString());
-					String id = resultSet.getString(ColumnNames.id.toString());
-					String region = resultSet.getString(ColumnNames.region.toString());
+					int id = resultSet.getInt(ColumnNames.id.toString());
 					String city = resultSet.getString(ColumnNames.city.toString());
-					
-					//Se region e city sono null (può succedere) li avvaloro come stringa vuota
-					region = Objects.toString(region, "");
-					city = Objects.toString(city, "");
-					
+										
 					//Costruisco il customer e lo aggiungo alla collection
-					Customer cust = new Customer(first_name, last_name, phone_number, id, region, city);
+					Customer cust = new Customer(first_name, last_name, phone_number, id, city);
 					customers.add(cust);
 				}
 
@@ -116,14 +109,13 @@ public class CustomerDAO {
 		try {
 			openNewConnection();
 			
-			String query = "INSERT INTO customers (first_name, last_name, phone, region, city)"
-					+ " VALUES (?, ?, ?, ?, ?)";
+			String query = "INSERT INTO customers (first_name, last_name, phone, city)"
+					+ " VALUES (?, ?, ?, ?)";
 			PreparedStatement statement = getNewStatement(query);
 			statement.setString(1, customer.getFirstName());
 			statement.setString(2, customer.getLastName());
 			statement.setString(3, customer.getPhoneNumber());
-			statement.setString(4, customer.getRegion());
-			statement.setString(5, customer.getCity());
+			statement.setString(4, customer.getCity());
 			
 			statement.executeUpdate();
 
@@ -170,6 +162,9 @@ public class CustomerDAO {
 	 * @throws SQLException 
 	 */
 	private void openNewConnection() throws SQLException {
+		String DB_URI = dbPropertiesManager.getDbURI();
+		String DB_USER = dbPropertiesManager.getUser();
+		String DB_PSW = dbPropertiesManager.getPsw();
 		connection = DriverManager.getConnection(DB_URI, DB_USER, DB_PSW);
 	}
 	
@@ -195,7 +190,6 @@ public class CustomerDAO {
 		lastName("last_name"), 
 		phoneNumber("phone"),
 		id("cust_id"),
-		region("region"),
 		city("city");
 		
 		private String columnName;

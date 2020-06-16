@@ -36,11 +36,10 @@ public class FormProcessing extends HttpServlet {
 		String firstName = request.getParameter("firstName");
 		String lastName = request.getParameter("lastName");
 		String phoneNumber = request.getParameter("phoneNumber");
-		String region = request.getParameter("region");
 		String city = request.getParameter("city");
 		
 		//Istanzio un customer
-		Customer newCustomer = new Customer(firstName, lastName, phoneNumber, region, city);
+		Customer newCustomer = new Customer(firstName, lastName, phoneNumber, city);
 		
 		String jspPath = null;
 		
@@ -55,11 +54,9 @@ public class FormProcessing extends HttpServlet {
 		} catch (DaoExceptions e) {
 			//Se si verificano errori predispongo una JSP di errore
 			String errorMessage = "Something went wrong with the database. Try again!";
-			
-			ServletUtils.forwardInternalServerError(request, response, getServletContext(), errorMessage);
-			
 			//log dell'errore
 			System.out.println("*** Errore: " + e.getMessage() + " ***");
+			ServletUtils.forwardError(request, response, getServletContext(), errorMessage);
 		}
 	}
 

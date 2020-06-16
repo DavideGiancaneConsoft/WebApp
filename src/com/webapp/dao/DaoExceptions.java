@@ -1,6 +1,8 @@
 package com.webapp.dao;
 
 public class DaoExceptions extends Exception{
+	private static final long serialVersionUID = 1L;
+
 	public DaoExceptions() {
 		super();
 	}
