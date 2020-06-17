@@ -12,8 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.webapp.bean.City;
 import com.webapp.bean.Region;
-import com.webapp.dao.DaoExceptions;
-import com.webapp.dao.RegionDAO;
+import com.webapp.dao.DaoException;
+import com.webapp.dao.IRegionDAO;
+import com.webapp.dao.jdbc.RegionDaoJDBC;
 
 /**
  * Servlet implementation class Registration
@@ -23,13 +24,13 @@ public class Registration extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
     private static final String citiesRequest = "CitiesRequest";
-	private RegionDAO regionDao;
+	private IRegionDAO regionDao;
 	private Gson gson;
 	
 	@Override
 		public void init() throws ServletException {
 			super.init();
-			regionDao = RegionDAO.getInstance();
+			regionDao = RegionDaoJDBC.getInstance();
 			gson = new Gson();
 		}
 
@@ -53,7 +54,7 @@ public class Registration extends HttpServlet {
 				response.setCharacterEncoding("UTF-8");
 				response.getWriter().write(jsonObject);	
 			}
-		} catch (DaoExceptions e) {
+		} catch (DaoException e) {
 			//Se si verificano errori predispongo una JSP di errore
 			String errorMessage = "Something went wrong! \n " + e.getMessage();
 			//log dell'errore

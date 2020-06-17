@@ -1,4 +1,4 @@
-package com.webapp.dao;
+package com.webapp.dao.jdbc;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,9 +10,11 @@ import java.util.LinkedList;
 
 import com.webapp.bean.City;
 import com.webapp.bean.Region;
+import com.webapp.dao.DaoException;
+import com.webapp.dao.IRegionDAO;
 
-public class RegionDAO {
-	private static RegionDAO instance;
+public class RegionDaoJDBC implements IRegionDAO{
+	private static IRegionDAO instance;
 	private Collection<Region> cache;
 	
 	private Connection connection;
@@ -21,7 +23,7 @@ public class RegionDAO {
 	
 	private DBPropertiesManager dbPropertiesManager;
 	
-	private RegionDAO() {	
+	private RegionDaoJDBC() {	
 		try {
 			cache = null;
 			dbPropertiesManager = DBPropertiesManager.getInstance();
@@ -35,19 +37,21 @@ public class RegionDAO {
 	 * Ritorna il singleton inizializzando il driver JDBC
 	 * @return il singleton della classe
 	 */
-	public static RegionDAO getInstance() {
+	public static IRegionDAO getInstance() {
 		if(instance == null)
-			instance = new RegionDAO();
+			instance = new RegionDaoJDBC();
 		return instance;
 	}
 	
 	/**
-	 * Legge tuttie le regioni dal db 
-	 * Se la cache è vuota interroga al db, altrimenti ritorna direttamente i customer nella cache
+	 * Legge tutte le regioni dal db 
+	 * Se la cache è vuota interroga il db, altrimenti ritorna direttamente
+	 * i customer nella cache
 	 * @return una collection con tutte le regioni
-	 * @throws DaoExceptions se si verificano problemi di interrogazione o di connessione
+	 * @throws DaoException se si verificano problemi di interrogazione o di connessione
 	 */
-	public Collection<Region> getRegions() throws DaoExceptions{
+	@Override
+	public Collection<Region> getRegions() throws DaoException{
 		if(cache == null) {
 			try {
 				Collection<Region> regions = new LinkedList<Region>();
@@ -70,7 +74,7 @@ public class RegionDAO {
 
 				cache = regions;
 			} catch (SQLException e) {
-				throw new DaoExceptions(e.getMessage());
+				throw new DaoException(e.getMessage());
 			} finally {
 				try {
 					resultSet.close();
@@ -83,14 +87,15 @@ public class RegionDAO {
 		return cache;	
 	}
 	
-	public Collection<City> getCities(int regionID) throws DaoExceptions{
+	@Override
+	public Collection<City> getCities(int regionID) throws DaoException{
 		try {
 			Collection<City> cities = new LinkedList<City>();
 			
 			openNewConnection();
 			
 			//Eseguo la query di select con join
-			String query = "SELECT initials, city_name FROM (regions JOIN cities) "
+			String query = "SELECT initials, city_name FROM (region JOIN city) "
 					+ "WHERE (region.reg_id=city.region and region.reg_id=?)";
 			
 			statement = getNewStatement(query);
@@ -110,7 +115,7 @@ public class RegionDAO {
 			return cities;
 		
 		} catch (SQLException e) {
-			throw new DaoExceptions(e.getMessage());
+			throw new DaoException(e.getMessage());
 		} finally {
 			try {
 				resultSet.close();

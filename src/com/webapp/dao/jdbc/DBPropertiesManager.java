@@ -1,4 +1,4 @@
-package com.webapp.dao;
+package com.webapp.dao.jdbc;
 
 import java.io.IOException;
 import java.io.InputStream;

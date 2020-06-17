@@ -1,4 +1,4 @@
-package com.webapp.dao;
+package com.webapp.dao.jdbc;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,15 +9,17 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import com.webapp.bean.Customer;
+import com.webapp.dao.DaoException;
+import com.webapp.dao.ICustomerDAO;
 
 /**
- * Classe singleton che implementa le operazioni CRUD
+ * Classe singleton DAO che estende <code>ICustomerDAO</code> con supporto JDBC
  * @author davide.giancane
  *
  */
-public class CustomerDAO {
+public class CustomerDaoJDBC implements ICustomerDAO {
 	
-	private static CustomerDAO instance;
+	private static ICustomerDAO instance;
 	private Collection<Customer> cache;
 	private boolean isModified;
 	
@@ -27,7 +29,7 @@ public class CustomerDAO {
 	
 	private DBPropertiesManager dbPropertiesManager;
 	
-	private CustomerDAO() {
+	private CustomerDaoJDBC() {
 		try {
 			cache = null;
 			isModified = false;
@@ -39,24 +41,18 @@ public class CustomerDAO {
 	}
 	
 	/**
-	 * Ritorna il singleton inizializzando il driver JDBC
-	 * @return il singleton della classe
+	 * Ritorna la singola istanza della classe
+	 * @return
 	 */
-	public static CustomerDAO getInstance() {
+	public static ICustomerDAO getInstance() {
 		if(instance == null) {
-			instance = new CustomerDAO();
+			instance = new CustomerDaoJDBC();
 		}
 			
 		return instance;
 	}
 	
-	/**
-	 * Legge tutti i customer presenti nella cache. 
-	 * Se la cache è vuota interroga al db, altrimenti ritorna direttamente i customer nella cache
-	 * @return una collection con tutti i customer
-	 * @throws DaoExceptions se si verificano problemi di interrogazione o di connessione
-	 */
-	public Collection<Customer> readCustomers() throws DaoExceptions{
+	public Collection<Customer> readCustomers() throws DaoException{
 		if(cache == null || isModified) {
 			try {
 				//Preparo la collection
@@ -86,7 +82,7 @@ public class CustomerDAO {
 
 				cache = customers;
 			} catch (SQLException e) {
-				throw new DaoExceptions(e.getMessage());
+				throw new DaoException(e.getMessage());
 			} finally {
 				try {
 					resultSet.close();
@@ -99,13 +95,7 @@ public class CustomerDAO {
 		return cache;	
 	}
 	
-	/**
-	 * Inserisce un nuovo customer all'interno del db
-	 * @param customer nuovo customer da inserire
-	 * @throws DaoExceptions se si verificano problemi di connessione o interrogazione
-	 * @throws SQLException
-	 */
-	public void insertNewCustomer(Customer customer) throws DaoExceptions{
+	public void insertCustomer(Customer customer) throws DaoException{
 		try {
 			openNewConnection();
 			
@@ -122,7 +112,7 @@ public class CustomerDAO {
 			//Aggiorno il flag, indicando che il DB è stato modificato 
 			isModified = true;
 		} catch (SQLException e) {
-			throw new DaoExceptions(e.getMessage());
+			throw new DaoException(e.getMessage());
 		} finally {
 			try {
 				statement.close();
@@ -131,12 +121,8 @@ public class CustomerDAO {
 		}
 	}
 	
-	/**
-	 * Elimina un customer dal DB
-	 * @param customerID id del customer da eliminare
-	 * @throws DaoExceptions 
-	 */
-	public void deleteCustomer(String customerID) throws DaoExceptions{
+
+	public void deleteCustomer(String customerID) throws DaoException{
 		try {
 			openNewConnection();
 			String query = "DELETE FROM customer WHERE cust_id=?";
@@ -148,7 +134,7 @@ public class CustomerDAO {
 			//Aggiorno il flag di modifica
 			isModified = true;
 		} catch (SQLException e) {
-			throw new DaoExceptions(e.getMessage());
+			throw new DaoException(e.getMessage());
 		} finally {
 			try {
 				statement.close();

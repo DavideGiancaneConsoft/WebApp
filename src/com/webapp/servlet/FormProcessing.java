@@ -8,8 +8,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.webapp.bean.Customer;
-import com.webapp.dao.CustomerDAO;
-import com.webapp.dao.DaoExceptions;
+import com.webapp.dao.jdbc.CustomerDaoJDBC;
+import com.webapp.dao.DaoException;
+import com.webapp.dao.ICustomerDAO;
 
 /**
  * Servlet implementation class FormProcessing
@@ -18,7 +19,7 @@ import com.webapp.dao.DaoExceptions;
 public class FormProcessing extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     
-	private CustomerDAO custDao;
+	private ICustomerDAO custDao;
     
     public FormProcessing() {super();}
 
@@ -28,7 +29,7 @@ public class FormProcessing extends HttpServlet {
     @Override
     public void init() throws ServletException {
     	super.init();
-    	custDao = CustomerDAO.getInstance();
+    	custDao = CustomerDaoJDBC.getInstance();
     }
     
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -45,13 +46,13 @@ public class FormProcessing extends HttpServlet {
 		
 		try {
 			//Inserisco l'oggetto nel DB
-			custDao.insertNewCustomer(newCustomer);
+			custDao.insertCustomer(newCustomer);
 			
 			//vado su una pagina di conferma della registrazione
 			jspPath = "/successfulRegistration.jsp";
 			getServletContext().getRequestDispatcher(jspPath).forward(request, response);
 		
-		} catch (DaoExceptions e) {
+		} catch (DaoException e) {
 			//Se si verificano errori predispongo una JSP di errore
 			String errorMessage = "Something went wrong with the database. Try again!";
 			//log dell'errore
