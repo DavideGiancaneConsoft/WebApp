@@ -30,5 +30,5 @@ public interface ICustomerDAO {
 	 * @param id identificativo del customer
 	 * @throws DaoException se si verificano errori durante la comunicazione col DB
 	 */
-	public void deleteCustomer(String id) throws DaoException;
+	public void deleteCustomer(int id) throws DaoException;
 }

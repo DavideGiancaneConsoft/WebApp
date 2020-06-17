@@ -15,6 +15,7 @@ import com.webapp.bean.Region;
 import com.webapp.dao.DaoException;
 import com.webapp.dao.IRegionDAO;
 import com.webapp.dao.jdbc.RegionDaoJDBC;
+import com.webapp.dao.jpa.RegionDaoJPA;
 
 /**
  * Servlet implementation class Registration
@@ -58,7 +59,7 @@ public class Registration extends HttpServlet {
 			//Se si verificano errori predispongo una JSP di errore
 			String errorMessage = "Something went wrong! \n " + e.getMessage();
 			//log dell'errore
-			System.out.println("*** Errore: " + e.getMessage() + " ***");
+			System.err.println("*** Error in 'Servlet Registration.java': " + e.getMessage() + " ***");
 			
 			ServletUtils.forwardError(request, response, getServletContext(), errorMessage);
 		}

@@ -122,12 +122,12 @@ public class CustomerDaoJDBC implements ICustomerDAO {
 	}
 	
 
-	public void deleteCustomer(String customerID) throws DaoException{
+	public void deleteCustomer(int customerID) throws DaoException{
 		try {
 			openNewConnection();
 			String query = "DELETE FROM customer WHERE cust_id=?";
 		    statement = getNewStatement(query);
-			statement.setString(1, customerID);
+			statement.setInt(1, customerID);
 			
 			statement.executeUpdate();
 	

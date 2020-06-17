@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class DBPropertiesManager {
+class DBPropertiesManager {
 	
 	private static DBPropertiesManager instance;
 	private Properties prop;

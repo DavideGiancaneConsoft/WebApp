@@ -10,9 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.webapp.bean.Customer;
-import com.webapp.dao.jdbc.CustomerDaoJDBC;
+import com.webapp.dao.jpa.CustomerDaoJPA;
 import com.webapp.dao.DaoException;
 import com.webapp.dao.ICustomerDAO;
+import com.webapp.dao.jdbc.CustomerDaoJDBC;
 
 /**
  * Servlet che gestisce la richiesta del client di ricevere 

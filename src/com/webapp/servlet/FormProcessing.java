@@ -8,9 +8,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.webapp.bean.Customer;
-import com.webapp.dao.jdbc.CustomerDaoJDBC;
+import com.webapp.dao.jpa.CustomerDaoJPA;
 import com.webapp.dao.DaoException;
 import com.webapp.dao.ICustomerDAO;
+import com.webapp.dao.jdbc.CustomerDaoJDBC;
 
 /**
  * Servlet implementation class FormProcessing
@@ -20,8 +21,7 @@ public class FormProcessing extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     
 	private ICustomerDAO custDao;
-    
-    public FormProcessing() {super();}
+   
 
     /**
      * Inizializzo il DAO al primo caricamento della Servlet

@@ -7,10 +7,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 
 import com.webapp.bean.City;
-import com.webapp.bean.Customer;
 import com.webapp.bean.Region;
 import com.webapp.dao.DaoException;
 import com.webapp.dao.IRegionDAO;
@@ -23,13 +21,12 @@ public class RegionDaoJPA implements IRegionDAO {
 		emf = Persistence.createEntityManagerFactory("WebAppPU");
 	}
 	
-	public IRegionDAO getInstance() {
+	public static IRegionDAO getInstance() {
 		if(instance == null)
 			instance = new RegionDaoJPA();
 		return instance;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<Region> getRegions() throws DaoException {
 		EntityManager em = emf.createEntityManager();
@@ -44,6 +41,7 @@ public class RegionDaoJPA implements IRegionDAO {
 			transaction.begin();
 			
 			//Eseguo la query di select con ritorno degli oggetti
+			@SuppressWarnings("unchecked")
 			Collection<Region> regions = query.getResultList();
 			transaction.commit();	
 			
@@ -69,7 +67,7 @@ public class RegionDaoJPA implements IRegionDAO {
 		try {
 			//Creo la query di select che mi ritorna oggetti di tipo Region
 			String select = "SELECT initials, city_name FROM (city JOIN region)"
-					+ " WHERE (city.region=region.reg_id AND reg.id="+regionID;
+					+ " WHERE (city.region=region.reg_id AND region.reg_id="+regionID + ")";
 			
 			Query query = em.createNativeQuery(select, City.class);
 			
