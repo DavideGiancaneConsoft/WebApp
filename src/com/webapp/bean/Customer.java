@@ -2,12 +2,30 @@ package com.webapp.bean;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+
+@Entity
 public class Customer implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	private String firstName, lastName, phoneNumber, city;
+	@Id
 	private int id;
 	
+	@Column(name = "first_name")
+	private String firstName;
+	
+	@Column(name = "last_name") 
+	private String lastName;
+	
+	@Column(name = "phone")
+	private String phoneNumber;
+	
+	@JoinColumn(name = "city")
+	private String city;
+		
 	public Customer() {}
 	
 	public Customer(String firstName, String lastName, String phoneNumber, 
@@ -29,43 +47,50 @@ public class Customer implements Serializable {
 		this.city = city;
 	}
 
+	@Id
+	public int getId() {
+		return id;
+	}
+
+
 	public String getFirstName() {
 		return firstName;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
 	public String getLastName() {
 		return lastName;
+	}
+	
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+	
+	public String getCity() {
+		return city;
+	}
+	
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
 
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
-	}
-
-	public int getId() {
-		return id;
 	}
 
 	public void setId(int id) {
 		this.id = id;
 	}
 
-	public String getCity() {
-		return city;
-	}
-
 	public void setCity(String city) {
 		this.city = city;
+	}
+	
+	@Override
+	public String toString() {
+		return firstName + " " + lastName;
 	}
 }
