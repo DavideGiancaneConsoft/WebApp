@@ -1,30 +1,71 @@
 package com.webapp.bean;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.LinkedList;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+import com.google.gson.annotations.Expose;
+
+@Entity
 public class Region implements Serializable {
-	private static final long serialVersionUID = 2761256604133768308L;
+	private static final long serialVersionUID = 1L;
 	
-	private int regionID;
+	@Id
+	@Column(name = "reg_id")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer regionID;
+	
+	@Column(length = 20, name = "region_name")
 	private String regionName;
 	
-	public Region() {}
+	@OneToMany(mappedBy = "region", fetch = FetchType.EAGER)
+	//dichiarato transient perché non voglio serializzarlo
+	@Expose(serialize = false)
+	private Collection<City> cities;
+	
+	public Region() {
+		cities = new LinkedList<>();
+	}
 
-	public Region(int regionID, String regionName) {
+	public Region(Integer regionID, String regionName) {
 		this.regionID = regionID;
 		this.regionName = regionName;
 	}
 	
-	public int getRegionID() {
+	public Integer getRegionID() {
 		return regionID;
 	}
-	public void setRegionID(int regionID) {
-		this.regionID = regionID;
-	}
+	
 	public String getRegionName() {
 		return regionName;
 	}
+	
+	public void setRegionID(Integer regionID) {
+		this.regionID = regionID;
+	}
+	
 	public void setRegionName(String regionName) {
 		this.regionName = regionName;
 	}	
+	
+	public Collection<City> getCities() {
+		return cities;
+	}
+
+	public void setCities(Collection<City> cities) {
+		this.cities = cities;
+	}
+
+	@Override
+	public String toString() {
+		return "Region [ID: " + regionID + ", Name: " + regionName + "]";
+	}
 }

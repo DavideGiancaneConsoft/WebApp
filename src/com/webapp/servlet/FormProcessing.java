@@ -7,9 +7,14 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.webapp.bean.City;
 import com.webapp.bean.Customer;
-import com.webapp.dao.CustomerDAO;
-import com.webapp.dao.DaoExceptions;
+import com.webapp.dao.jpa.CustomerDaoJPA;
+import com.webapp.dao.jpa.RegionDaoJPA;
+import com.webapp.dao.DaoException;
+import com.webapp.dao.ICustomerDAO;
+import com.webapp.dao.IRegionDAO;
 
 /**
  * Servlet implementation class FormProcessing
@@ -18,9 +23,10 @@ import com.webapp.dao.DaoExceptions;
 public class FormProcessing extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     
-	private CustomerDAO custDao;
-    
-    public FormProcessing() {super();}
+	private ICustomerDAO custDao;
+	
+	private IRegionDAO regionDao;
+   
 
     /**
      * Inizializzo il DAO al primo caricamento della Servlet
@@ -28,7 +34,8 @@ public class FormProcessing extends HttpServlet {
     @Override
     public void init() throws ServletException {
     	super.init();
-    	custDao = CustomerDAO.getInstance();
+    	custDao = CustomerDaoJPA.getInstance();
+    	regionDao = RegionDaoJPA.getInstance();
     }
     
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -36,22 +43,25 @@ public class FormProcessing extends HttpServlet {
 		String firstName = request.getParameter("firstName");
 		String lastName = request.getParameter("lastName");
 		String phoneNumber = request.getParameter("phoneNumber");
-		String city = request.getParameter("city");
-		
-		//Istanzio un customer
-		Customer newCustomer = new Customer(firstName, lastName, phoneNumber, city);
+		String cityInitials = request.getParameter("city");
 		
 		String jspPath = null;
 		
 		try {
+			//prendo la città
+			City theCity = regionDao.selectCityByInitials(cityInitials);
+			
+			//Istanzio un customer
+			Customer newCustomer = new Customer(firstName, lastName, phoneNumber, theCity);
+			
 			//Inserisco l'oggetto nel DB
-			custDao.insertNewCustomer(newCustomer);
+			custDao.insertCustomer(newCustomer);
 			
 			//vado su una pagina di conferma della registrazione
 			jspPath = "/successfulRegistration.jsp";
 			getServletContext().getRequestDispatcher(jspPath).forward(request, response);
 		
-		} catch (DaoExceptions e) {
+		} catch (DaoException e) {
 			//Se si verificano errori predispongo una JSP di errore
 			String errorMessage = "Something went wrong with the database. Try again!";
 			//log dell'errore

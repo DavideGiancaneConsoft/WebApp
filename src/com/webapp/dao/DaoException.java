@@ -1,13 +1,13 @@
 package com.webapp.dao;
 
-public class DaoExceptions extends Exception{
+public class DaoException extends Exception{
 	private static final long serialVersionUID = 1L;
 
-	public DaoExceptions() {
+	public DaoException() {
 		super();
 	}
 	
-	public DaoExceptions(String message) {
+	public DaoException(String message) {
 		super(message);
 	}
 

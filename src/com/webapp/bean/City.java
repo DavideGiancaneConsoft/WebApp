@@ -2,39 +2,66 @@ package com.webapp.bean;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import com.google.gson.annotations.Expose;
+
+@Entity
 public class City implements Serializable{
 	private static final long serialVersionUID = 3958893281486635756L;
 	
-	private char[] initials;
+	@Id
+	@Column(length = 2, name = "initials")
+	@Expose(serialize = true)
+	private String initials;
+	
+	@Column(length = 20, nullable = false, name = "city_name")
+	@Expose(serialize = true)
 	private String name;
-	private int region;
 	
-	public City() {
-		this.initials = new char[2];
-	}
+	@ManyToOne
+	@JoinColumn(name = "region")
+	@Expose(serialize = false)
+	private Region region;
 	
-	public City(char[] initials, String name, int region) {
+	public City() {}
+	
+	public City(String initials, String name, Region region) {
 		this.initials  = initials;
 		this.name = name;
 		this.region = region;
 	}
 	
-	public char[] getInitials() {
+	public String getInitials() {
 		return initials;
 	}
-	public void setInitials(char[] initials) {
-		this.initials = initials;
-	}
+	
 	public String getName() {
 		return name;
 	}
+	
+	public Region getRegion() {
+		return region;
+	}
+	
+	public void setInitials(String initials) {
+		this.initials = initials;
+	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
-	public int getRegion() {
-		return region;
-	}
-	public void setRegion(int region) {
+	
+	public void setRegion(Region region) {
 		this.region = region;
 	}	
+	
+	@Override
+	public String toString() {
+		return "City [name: " + name + ", region: " + region + "]";
+	}
 }

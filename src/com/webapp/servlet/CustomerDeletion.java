@@ -7,9 +7,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.webapp.dao.CustomerDAO;
-import com.webapp.dao.DaoExceptions;
+import com.webapp.dao.DaoException;
+import com.webapp.dao.ICustomerDAO;
+import com.webapp.dao.jpa.CustomerDaoJPA;
 
 /**
  * Servlet implementation class CustomerDeletion
@@ -17,29 +17,24 @@ import com.webapp.dao.DaoExceptions;
 @WebServlet("/customerDeletion")
 public class CustomerDeletion extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private CustomerDAO custDao;
-   
-    public CustomerDeletion() {
-        super();
-    }
+	private ICustomerDAO custDao;
     
     @Override
     public void init() throws ServletException {
     	super.init();
-    	custDao = CustomerDAO.getInstance();
+    	custDao = CustomerDaoJPA.getInstance();
     }
     
-	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//Prendo l'ID del customer da eliminare
 		String customerID = request.getParameter("customerID");
 		try {
 			//Elimino il customer dal DB
-			custDao.deleteCustomer(customerID);
-		} catch (DaoExceptions e) {	
+			custDao.deleteCustomer(Integer.valueOf(customerID));
+		} catch (DaoException e) {	
 			//log dell'errore
-			System.err.println("*** Errore: " + e.getMessage() + " ***");
+			System.err.println("*** Error in Servlet CustomerDeletion.java: " + e.getMessage() + " ***");
 		}
 	}
 }
