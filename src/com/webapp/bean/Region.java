@@ -15,19 +15,19 @@ public class Region implements Serializable {
 	@Id
 	@Column(name = "reg_id")
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private int regionID;
+	private Integer regionID;
 	
 	@Column(name = "region_name")
 	private String regionName;
 	
 	public Region() {}
 
-	public Region(int regionID, String regionName) {
+	public Region(Integer regionID, String regionName) {
 		this.regionID = regionID;
 		this.regionName = regionName;
 	}
 	
-	public int getRegionID() {
+	public Integer getRegionID() {
 		return regionID;
 	}
 	
@@ -35,7 +35,7 @@ public class Region implements Serializable {
 		return regionName;
 	}
 	
-	public void setRegionID(int regionID) {
+	public void setRegionID(Integer regionID) {
 		this.regionID = regionID;
 	}
 	

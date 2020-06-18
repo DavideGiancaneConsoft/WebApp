@@ -34,8 +34,8 @@ public class jpaTest extends HttpServlet {
 			String select = "SELECT initials, city_name FROM (city JOIN region)"
 					+ " WHERE (city.region=region.reg_id AND region.reg_id="+1 + ")";
 		
-			Query query = em.createNativeQuery(select);
-			//Query query = em.createNativeQuery(select, City.class); --> NON FUNZIONA
+			//Query query = em.createNativeQuery(select);
+			Query query = em.createNativeQuery(select, City.class); // --> NON FUNZIONA
 			
 			//Inizio transazione
 			transaction = em.getTransaction();

@@ -60,7 +60,7 @@ public class RegionDaoJPA implements IRegionDAO {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Collection<City> getCities(int regionID) throws DaoException {
+	public Collection<City> getCities(Integer regionID) throws DaoException {
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction transaction = null;
 	

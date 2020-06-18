@@ -20,5 +20,5 @@ public interface IRegionDAO {
 	 * @return le città della regione <code>id</code>
 	 * @throws DaoException
 	 */
-	public Collection<City> getCities(int regionID) throws DaoException;
+	public Collection<City> getCities(Integer regionID) throws DaoException;
 }

@@ -81,7 +81,7 @@ public class CustomerDaoJPA implements ICustomerDAO {
 	}
 
 	@Override
-	public void deleteCustomer(int id) throws DaoException{
+	public void deleteCustomer(Integer id) throws DaoException{
 		//Creo un entity manager e transaction per gestire la query
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction transaction = null;

@@ -88,7 +88,7 @@ public class RegionDaoJDBC implements IRegionDAO{
 	}
 	
 	@Override
-	public Collection<City> getCities(int regionID) throws DaoException{
+	public Collection<City> getCities(Integer regionID) throws DaoException{
 		try {
 			Collection<City> cities = new LinkedList<City>();
 			
@@ -106,7 +106,7 @@ public class RegionDaoJDBC implements IRegionDAO{
 			resultSet = statement.getResultSet();
 			
 			while(resultSet.next()) {
-				char[] initials = resultSet.getString("initials").toCharArray();
+				String initials = resultSet.getString("initials");
 				String cityName = resultSet.getString("city_name");		
 				City c = new City(initials, cityName, regionID);
 				cities.add(c);

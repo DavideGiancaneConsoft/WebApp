@@ -11,25 +11,23 @@ public class City implements Serializable{
 	private static final long serialVersionUID = 3958893281486635756L;
 	
 	@Id
-	private char[] initials;
+	private String initials;
 	
 	@Column(name = "city_name")
 	private String name;
 	
 	@Column(name = "region")
-	private int region;
+	private Integer region;
 	
-	public City() {
-		this.initials = new char[2];
-	}
+	public City() {}
 	
-	public City(char[] initials, String name, int region) {
+	public City(String initials, String name, Integer region) {
 		this.initials  = initials;
 		this.name = name;
 		this.region = region;
 	}
 	
-	public char[] getInitials() {
+	public String getInitials() {
 		return initials;
 	}
 	
@@ -41,7 +39,7 @@ public class City implements Serializable{
 		return region;
 	}
 	
-	public void setInitials(char[] initials) {
+	public void setInitials(String initials) {
 		this.initials = initials;
 	}
 	
@@ -49,7 +47,7 @@ public class City implements Serializable{
 		this.name = name;
 	}
 	
-	public void setRegion(int region) {
+	public void setRegion(Integer region) {
 		this.region = region;
 	}	
 }

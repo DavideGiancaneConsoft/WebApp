@@ -72,7 +72,7 @@ public class CustomerDaoJDBC implements ICustomerDAO {
 					String first_name = resultSet.getString(ColumnNames.firstName.toString());
 					String last_name = resultSet.getString(ColumnNames.lastName.toString());
 					String phone_number = resultSet.getString(ColumnNames.phoneNumber.toString());
-					int id = resultSet.getInt(ColumnNames.id.toString());
+					Integer id = resultSet.getInt(ColumnNames.id.toString());
 					String city = resultSet.getString(ColumnNames.city.toString());
 										
 					//Costruisco il customer e lo aggiungo alla collection
@@ -122,7 +122,7 @@ public class CustomerDaoJDBC implements ICustomerDAO {
 	}
 	
 
-	public void deleteCustomer(int customerID) throws DaoException{
+	public void deleteCustomer(Integer customerID) throws DaoException{
 		try {
 			openNewConnection();
 			String query = "DELETE FROM customer WHERE cust_id=?";
