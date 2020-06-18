@@ -2,7 +2,6 @@ package com.webapp.servlet;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -27,15 +26,15 @@ public class Registration extends HttpServlet {
 	
     private static final String citiesRequest = "CitiesRequest";
 	private IRegionDAO regionDao;
-	private GsonBuilder gsonBuilder;
 	private Collection<Region> regions;
+	private GsonBuilder gsonBuilder;
 	
 	@Override
-		public void init() throws ServletException {
-			super.init();
-			regionDao = RegionDaoJPA.getInstance();
-			gsonBuilder = new GsonBuilder();
-		}
+	public void init() throws ServletException {
+		super.init();
+		regionDao = RegionDaoJPA.getInstance();
+		gsonBuilder = new GsonBuilder();
+	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String action = request.getParameter("requestAction");
@@ -46,19 +45,15 @@ public class Registration extends HttpServlet {
 				request.setAttribute("regions", regions);
 				
 				//Forward verso la JSP
-				jspPath = "/registrationForm.jsp";
+				jspPath = "/registrationForm.jsp"; 
 				getServletContext().getRequestDispatcher(jspPath).forward(request, response);
 			} else if(action.contentEquals(citiesRequest)) {
 				int regionID = Integer.valueOf(request.getParameter("regionID"));
 				
 				Collection<City> cities = regionDao.selectCitiesByRegion(regionID);
-				
-				gsonBuilder.registerTypeAdapter(City.class, ServletUtils.getRegionSerializer());
-				Gson customGson = gsonBuilder.create();
-				
-				//FIXME: risolvere la serializzazione
-				
-				String jsonObject = customGson.toJson(cities);
+
+				Gson gson = gsonBuilder.excludeFieldsWithoutExposeAnnotation().create();
+				String jsonObject = gson.toJson(cities);
 				
 				response.setContentType("application/json");
 				response.setCharacterEncoding("UTF-8");

@@ -12,6 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.google.gson.annotations.Expose;
+
 @Entity
 public class Region implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -25,6 +27,8 @@ public class Region implements Serializable {
 	private String regionName;
 	
 	@OneToMany(mappedBy = "region", fetch = FetchType.EAGER)
+	//dichiarato transient perché non voglio serializzarlo
+	@Expose(serialize = false)
 	private Collection<City> cities;
 	
 	public Region() {

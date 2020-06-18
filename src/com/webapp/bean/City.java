@@ -8,19 +8,24 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.google.gson.annotations.Expose;
+
 @Entity
 public class City implements Serializable{
 	private static final long serialVersionUID = 3958893281486635756L;
 	
 	@Id
 	@Column(length = 2, name = "initials")
+	@Expose(serialize = true)
 	private String initials;
 	
 	@Column(length = 20, nullable = false, name = "city_name")
+	@Expose(serialize = true)
 	private String name;
 	
 	@ManyToOne
 	@JoinColumn(name = "region")
+	@Expose(serialize = false)
 	private Region region;
 	
 	public City() {}
