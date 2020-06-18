@@ -13,7 +13,6 @@ import com.webapp.bean.Customer;
 import com.webapp.dao.jpa.CustomerDaoJPA;
 import com.webapp.dao.DaoException;
 import com.webapp.dao.ICustomerDAO;
-import com.webapp.dao.jdbc.CustomerDaoJDBC;
 
 /**
  * Servlet che gestisce la richiesta del client di ricevere 
@@ -29,14 +28,14 @@ public class CustomersList extends HttpServlet {
     @Override
     public void init() throws ServletException {
     	super.init();
-    	custDao = CustomerDaoJDBC.getInstance();
+    	custDao = CustomerDaoJPA.getInstance();
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String jspPath = null;
 		try {
 			//Prendo la lista dei customer
-			Collection<Customer> customers = custDao.readCustomers();
+			Collection<Customer> customers = custDao.selectAllCustomers();
 			request.setAttribute("customers", customers);
 			
 			//Forward verso la JSP

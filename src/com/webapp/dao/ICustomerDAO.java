@@ -16,7 +16,7 @@ public interface ICustomerDAO {
 	 * @return i customers presenti nella tabella <i>Customer</i>
 	 * @throws DaoException se si verificano errori durante la comunicazione col DB
 	 */
-	public Collection<Customer> readCustomers() throws DaoException;
+	public Collection<Customer> selectAllCustomers() throws DaoException;
 	
 	/**
 	 * Inserisce un nuovo customer all'interno della tabella <i>Customer</i>

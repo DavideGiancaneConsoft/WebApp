@@ -4,9 +4,8 @@ import java.util.Collection;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import com.webapp.bean.City;
 import com.webapp.bean.Region;
@@ -28,29 +27,22 @@ public class RegionDaoJPA implements IRegionDAO {
 	}
 
 	@Override
-	public Collection<Region> getRegions() throws DaoException {
-		EntityManager em = emf.createEntityManager();
-		EntityTransaction transaction = null;
-	
+	public Collection<Region> selectRegions() throws DaoException {
+		EntityManager em = emf.createEntityManager();	
 		try {
 			//Creo la query di select che mi ritorna oggetti di tipo Region
-			Query query = em.createNativeQuery("SELECT * FROM region", Region.class);
+			String regionsSelect = "SELECT r FROM Region r";
 			
-			//Inizio transazione
-			transaction = em.getTransaction();
-			transaction.begin();
-			
+			//Creo la TypedQuery usando JPQL
+			TypedQuery<Region> query = em.createQuery(regionsSelect, Region.class);
+
 			//Eseguo la query di select con ritorno degli oggetti
-			@SuppressWarnings("unchecked")
-			Collection<Region> regions = query.getResultList();
-			transaction.commit();	
+			Collection<Region> cities = query.getResultList();
 			
 			//ritorno i customers
-			return regions;
+			return cities;
 		} catch (Exception e) {
-			//Se si verifica una qualsiasi eccezione faccio rollback e rilancio DaoException
-			if(transaction != null)
-				transaction.rollback();
+			//Se si verifica una qualsiasi eccezione rilancio una DaoException
 			throw new DaoException(e.getMessage());
 		} finally {
 			//infine, a prescindere dall'esito della transazione, chiudo l'entity manager
@@ -58,36 +50,39 @@ public class RegionDaoJPA implements IRegionDAO {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Collection<City> getCities(Integer regionID) throws DaoException {
-		EntityManager em = emf.createEntityManager();
-		EntityTransaction transaction = null;
-	
+	public Collection<City> selectCitiesByRegion(Integer regionID) throws DaoException {
+		EntityManager em = emf.createEntityManager();	
 		try {
-			//Creo la query di select che mi ritorna oggetti di tipo Region
-			String select = "SELECT initials, city_name FROM (city JOIN region)"
-					+ " WHERE (city.region=region.reg_id AND region.reg_id="+regionID + ")";
+			//Creo la query di select che mi ritorna oggetti di tipo City
+			String citySelect = "SELECT c FROM Region r JOIN r.cities c WHERE (c.region=r.regionID AND r.regionID= :id)";
 			
-			Query query = em.createNativeQuery(select, City.class);
-			
-			//Inizio transazione
-			transaction = em.getTransaction();
-			transaction.begin();
-			
+			//Creo la TypedQuery usando JPQL
+			TypedQuery<City> query = em.createQuery(citySelect, City.class);
+			query.setParameter("id", regionID);
+		
 			//Eseguo la query di select con ritorno degli oggetti
 			Collection<City> cities = query.getResultList();
-			transaction.commit();	
 			
 			//ritorno i customers
 			return cities;
 		} catch (Exception e) {
-			//Se si verifica una qualsiasi eccezione faccio rollback e rilancio DaoException
-			if(transaction != null)
-				transaction.rollback();
+			//Se si verifica una qualsiasi eccezione rilancio una DaoException
 			throw new DaoException(e.getMessage());
 		} finally {
 			//infine, a prescindere dall'esito della transazione, chiudo l'entity manager
+			em.close();
+		}
+	}
+
+	@Override
+	public City selectCityByInitials(String initials) throws DaoException {
+		EntityManager em = emf.createEntityManager();	
+		try {
+			return em.find(City.class, initials);
+		} catch (Exception e) {
+			throw new DaoException(e.getMessage());
+		} finally {
 			em.close();
 		}
 	}

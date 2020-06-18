@@ -12,7 +12,7 @@ public interface IRegionDAO {
 	 * @return le regioni della tabella <i>Regions</i>
 	 * @throws DaoException se si verificano errori di comunicazione col DB
 	 */
-	public Collection<Region> getRegions() throws DaoException;
+	public Collection<Region> selectRegions() throws DaoException;
 	
 	/**
 	 * Ritorna le città afferenti ad una specifica regione
@@ -20,5 +20,7 @@ public interface IRegionDAO {
 	 * @return le città della regione <code>id</code>
 	 * @throws DaoException
 	 */
-	public Collection<City> getCities(Integer regionID) throws DaoException;
+	public Collection<City> selectCitiesByRegion(Integer regionID) throws DaoException;
+	
+	public City selectCityByInitials(String initials) throws DaoException;
 }

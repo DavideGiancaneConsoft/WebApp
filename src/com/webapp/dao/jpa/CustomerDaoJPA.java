@@ -5,7 +5,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+
 import com.webapp.bean.Customer;
 import com.webapp.dao.DaoException;
 import com.webapp.dao.ICustomerDAO;
@@ -25,30 +26,23 @@ public class CustomerDaoJPA implements ICustomerDAO {
 		emf = Persistence.createEntityManagerFactory("WebAppPU");
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
-	public Collection<Customer> readCustomers() throws DaoException {
-		EntityManager em = emf.createEntityManager();
-		EntityTransaction transaction = null;
-	
+	public Collection<Customer> selectAllCustomers() throws DaoException {
+		EntityManager em = emf.createEntityManager();	
 		try {
-			//Creo la query di select che mi ritorna oggetti di tipo Customer
-			Query query = em.createNativeQuery("SELECT * FROM customer", Customer.class);
+			//Creo la query di select che mi ritorna oggetti di tipo Region
+			String customerSelect = "SELECT c FROM Customer c";
 			
-			//Inizio transazione
-			transaction = em.getTransaction();
-			transaction.begin();
-			
+			//Creo la TypedQuery usando JPQL
+			TypedQuery<Customer> query = em.createQuery(customerSelect, Customer.class);
+
 			//Eseguo la query di select con ritorno degli oggetti
 			Collection<Customer> customers = query.getResultList();
-			transaction.commit();	
 			
 			//ritorno i customers
 			return customers;
 		} catch (Exception e) {
-			//Se si verifica una qualsiasi eccezione faccio rollback e rilancio DaoException
-			if(transaction != null)
-				transaction.rollback();
+			//Se si verifica una qualsiasi eccezione rilancio una DaoException
 			throw new DaoException(e.getMessage());
 		} finally {
 			//infine, a prescindere dall'esito della transazione, chiudo l'entity manager
@@ -93,7 +87,6 @@ public class CustomerDaoJPA implements ICustomerDAO {
 			//Troppo il customer con l'id ricercato e lo rimuovo
 			Customer c = em.find(Customer.class, id);
 			em.remove(c);
-			//em.persist(c);
 			transaction.commit();
 		} catch (Exception e) {
 			//Se si verifica una qualsiasi eccezione faccio il rollback e rilancio DaoException

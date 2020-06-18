@@ -2,6 +2,7 @@ package com.webapp.servlet;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,11 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.webapp.bean.City;
 import com.webapp.bean.Region;
 import com.webapp.dao.DaoException;
 import com.webapp.dao.IRegionDAO;
-import com.webapp.dao.jdbc.RegionDaoJDBC;
 import com.webapp.dao.jpa.RegionDaoJPA;
 
 /**
@@ -26,13 +27,14 @@ public class Registration extends HttpServlet {
 	
     private static final String citiesRequest = "CitiesRequest";
 	private IRegionDAO regionDao;
-	private Gson gson;
+	private GsonBuilder gsonBuilder;
+	private Collection<Region> regions;
 	
 	@Override
 		public void init() throws ServletException {
 			super.init();
-			regionDao = RegionDaoJDBC.getInstance();
-			gson = new Gson();
+			regionDao = RegionDaoJPA.getInstance();
+			gsonBuilder = new GsonBuilder();
 		}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -40,7 +42,7 @@ public class Registration extends HttpServlet {
 		String jspPath = null;
 		try {
 			if(action == null) {
-				Collection<Region> regions = regionDao.getRegions();
+				regions = regionDao.selectRegions();
 				request.setAttribute("regions", regions);
 				
 				//Forward verso la JSP
@@ -48,14 +50,21 @@ public class Registration extends HttpServlet {
 				getServletContext().getRequestDispatcher(jspPath).forward(request, response);
 			} else if(action.contentEquals(citiesRequest)) {
 				int regionID = Integer.valueOf(request.getParameter("regionID"));
-				Collection<City> cities = regionDao.getCities(regionID);
-				String jsonObject = gson.toJson(cities);
+				
+				Collection<City> cities = regionDao.selectCitiesByRegion(regionID);
+				
+				gsonBuilder.registerTypeAdapter(City.class, ServletUtils.getRegionSerializer());
+				Gson customGson = gsonBuilder.create();
+				
+				//FIXME: risolvere la serializzazione
+				
+				String jsonObject = customGson.toJson(cities);
 				
 				response.setContentType("application/json");
 				response.setCharacterEncoding("UTF-8");
 				response.getWriter().write(jsonObject);	
 			}
-		} catch (DaoException e) {
+		} catch (Exception e) {
 			//Se si verificano errori predispongo una JSP di errore
 			String errorMessage = "Something went wrong! \n " + e.getMessage();
 			//log dell'errore

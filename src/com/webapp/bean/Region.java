@@ -1,12 +1,16 @@
 package com.webapp.bean;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Region implements Serializable {
@@ -17,10 +21,15 @@ public class Region implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer regionID;
 	
-	@Column(name = "region_name")
+	@Column(length = 20, name = "region_name")
 	private String regionName;
 	
-	public Region() {}
+	@OneToMany(mappedBy = "region", fetch = FetchType.EAGER)
+	private Collection<City> cities;
+	
+	public Region() {
+		cities = new LinkedList<>();
+	}
 
 	public Region(Integer regionID, String regionName) {
 		this.regionID = regionID;
@@ -43,6 +52,14 @@ public class Region implements Serializable {
 		this.regionName = regionName;
 	}	
 	
+	public Collection<City> getCities() {
+		return cities;
+	}
+
+	public void setCities(Collection<City> cities) {
+		this.cities = cities;
+	}
+
 	@Override
 	public String toString() {
 		return "Region [ID: " + regionID + ", Name: " + regionName + "]";

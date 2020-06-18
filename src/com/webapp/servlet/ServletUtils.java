@@ -1,11 +1,18 @@
 package com.webapp.servlet;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.webapp.bean.Region;
 
 /**
  * Classe di funzioni utility per le servlet
@@ -42,5 +49,18 @@ class ServletUtils {
 	 */
 	public static void setDefaultJspErrorPath(String jspPath) {
 		jspErrorPath = jspPath;
+	}
+	
+	public static JsonSerializer<Region> getRegionSerializer(){
+		return new JsonSerializer<Region>() {
+			@Override
+			public JsonElement serialize(Region src, Type typeOfSrc, JsonSerializationContext context) {
+				JsonObject jsonRegion = new JsonObject();
+				jsonRegion.addProperty("regionID", src.getRegionID());
+				jsonRegion.addProperty("regionName", src.getRegionName());
+				
+				return jsonRegion;
+			}
+		};
 	}
 }

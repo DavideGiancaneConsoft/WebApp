@@ -8,32 +8,34 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Customer implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@Column(name = "cust_id")
+	@Column(length = 2, name = "cust_id")
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 	
-	@Column(name = "first_name")
+	@Column(length = 20, nullable = false, name = "first_name")
 	private String firstName;
 	
-	@Column(name = "last_name") 
+	@Column(length = 20, nullable = false, name = "last_name") 
 	private String lastName;
 	
-	@Column(name = "phone")
+	@Column(length = 20, nullable = false, name = "phone")
 	private String phoneNumber;
 	
+	@ManyToOne
 	@JoinColumn(name = "city")
-	private String city;
+	private City city;
 		
 	public Customer() {}
 	
 	public Customer(String firstName, String lastName, String phoneNumber, 
-			Integer id, String city) {
+			Integer id, City city) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phoneNumber = phoneNumber;
@@ -44,7 +46,7 @@ public class Customer implements Serializable {
 	public Customer(String firstName,
 			String lastName, 
 			String phoneNumber,
-			String city) {
+			City city) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phoneNumber = phoneNumber;
@@ -67,7 +69,7 @@ public class Customer implements Serializable {
 		return phoneNumber;
 	}
 	
-	public String getCity() {
+	public City getCity() {
 		return city;
 	}
 	
@@ -87,12 +89,16 @@ public class Customer implements Serializable {
 		this.id = id;
 	}
 
-	public void setCity(String city) {
+	public void setCity(City city) {
 		this.city = city;
 	}
 	
 	@Override
 	public String toString() {
-		return firstName + " " + lastName;
+		return "Customer [" 
+				+ firstName +
+				" " 
+				+ lastName +
+				"]";
 	}
 }

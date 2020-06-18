@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.webapp.dao.DaoException;
 import com.webapp.dao.ICustomerDAO;
-import com.webapp.dao.jdbc.CustomerDaoJDBC;
 import com.webapp.dao.jpa.CustomerDaoJPA;
 
 /**
@@ -23,7 +22,7 @@ public class CustomerDeletion extends HttpServlet {
     @Override
     public void init() throws ServletException {
     	super.init();
-    	custDao = CustomerDaoJDBC.getInstance();
+    	custDao = CustomerDaoJPA.getInstance();
     }
     
 	@Override
