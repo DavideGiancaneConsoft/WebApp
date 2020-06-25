@@ -27,7 +27,6 @@ public class Region implements Serializable {
 	private String regionName;
 	
 	@OneToMany(mappedBy = "region", fetch = FetchType.EAGER)
-	//dichiarato transient perché non voglio serializzarlo
 	@Expose(serialize = false)
 	private Collection<City> cities;
 	

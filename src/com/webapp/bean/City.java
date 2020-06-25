@@ -24,7 +24,7 @@ public class City implements Serializable{
 	private String name;
 	
 	@ManyToOne
-	@JoinColumn(name = "region")
+	@JoinColumn(name = "belonging_region")
 	@Expose(serialize = false)
 	private Region region;
 	

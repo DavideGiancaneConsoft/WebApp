@@ -16,7 +16,7 @@ public class Customer implements Serializable {
 	
 	@Id
 	@Column(length = 2, name = "cust_id")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO) //questa dipende dal DB sottostante
 	private Integer id;
 	
 	@Column(length = 20, nullable = false, name = "first_name")
