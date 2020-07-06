@@ -12,6 +12,7 @@ import com.webapp.dao.DBPropertiesManager;
 import com.webapp.dao.DaoException;
 import com.webapp.dao.ICustomerDAO;
 
+import oracle.jdbc.OracleType;
 import oracle.jdbc.OracleTypes;
 
 public class CustomerDaoOJDBC implements ICustomerDAO{
@@ -61,15 +62,15 @@ public class CustomerDaoOJDBC implements ICustomerDAO{
 			}
 			
 		} catch (SQLException e) {
-			System.err.println("Error: " + e.getMessage());
-			throw new DaoException("Something wrong reading customers with OracleDB");
+			throw new DaoException(e.getMessage());
 		} finally {
 			try {
 				rs.close();
 				stmt.close();
 				connection.close();
 			} catch (SQLException e) {
-				System.err.println("Error in CustomerDaoOJDBC -> readCustomers(): " + e.getMessage());
+				System.err.println("*** Error in CustomerDaoOJDBC -> readCustomers(): " +
+						e.getMessage() + " ***");
 			} catch (NullPointerException ignored) {}
 		}
 		return null;
@@ -81,8 +82,38 @@ public class CustomerDaoOJDBC implements ICustomerDAO{
 	 */
 	@Override
 	public void insertCustomer(Customer c) throws DaoException {
-		// TODO Auto-generated method stub
-		
+		try {
+			//Apro la connessione e preparo lo statement
+			openNewConnection();
+			stmt = connection.prepareCall("{call customer_package.add_customer(?,?,?,?,?)}");
+			//stmt.setEscapeProcessing(false);
+			
+			//I parametri da passare sono 5 (4 di customer + 1 di output)
+			stmt.setString(1, c.getFirstName());
+			stmt.setString(2, c.getLastName());
+			stmt.setString(3, c.getPhoneNumber());
+			stmt.setString(4, c.getCity());
+			
+			//parametro di output
+			stmt.registerOutParameter(5, OracleType.VARCHAR2);
+			
+			//eseguo la procedura
+			stmt.execute();
+			
+			//Prendo la stringa che rappresenta l'esito della procedura e la stampo
+			String result = stmt.getString(5);
+			System.err.println("Customer record save: success = " + result);
+		} catch (SQLException e) {
+			throw new DaoException(e.getMessage());
+		} finally {
+			try {
+				stmt.close();
+				connection.close();
+			} catch (SQLException e) {
+				System.err.println("*** Error in CustomerDaoOJDBC -> insertCustomer(): " +
+						e.getMessage() + " ***");
+			} catch (NullPointerException ignored) {}
+		}
 	}
 
 	/**
@@ -95,20 +126,17 @@ public class CustomerDaoOJDBC implements ICustomerDAO{
 		
 	}
 	
-	private void openNewConnection() {
+	private void openNewConnection() throws SQLException {
 		String oracleDbUri = dbPropertiesManager.getOracleDbUri();
 		String oracleDbUser = dbPropertiesManager.getOracleDbUser();
 		String oracleDbPsw =  dbPropertiesManager.getOracleDbPsw();
-		try {
-			connection = DriverManager.getConnection(oracleDbUri, oracleDbUser, oracleDbPsw);
-		} catch (SQLException e) {
-			System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
-			e.printStackTrace();
-		}
+		
+		connection = DriverManager.getConnection(oracleDbUri, oracleDbUser, oracleDbPsw);
 	}
 	
 	public static void main(String[] args) throws DaoException {
 		CustomerDaoOJDBC dao = CustomerDaoOJDBC.getInstance();
-		dao.readCustomers();
+		Customer c = new Customer("Pinco", "Pallino", "484820", "MI");
+		dao.insertCustomer(c);
 	}
 }
