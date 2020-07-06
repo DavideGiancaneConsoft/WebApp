@@ -17,18 +17,18 @@ import oracle.jdbc.OracleTypes;
 
 public class CustomerDaoOJDBC implements ICustomerDAO{
 	
-	private static CustomerDaoOJDBC instance;
+	private static ICustomerDAO instance;
 	private Connection connection;
 	private DBPropertiesManager dbPropertiesManager;
 	private CallableStatement stmt;
 
-	private CustomerDaoOJDBC() {}
+	private CustomerDaoOJDBC() {
+		dbPropertiesManager = DBPropertiesManager.getInstance();
+	}
 	
-	public static CustomerDaoOJDBC getInstance() {
-		if(instance == null) {
+	public static ICustomerDAO getInstance() {
+		if(instance == null)
 			instance = new CustomerDaoOJDBC();
-			instance.dbPropertiesManager = DBPropertiesManager.getInstance();
-		}
 		return instance;
 	}
 	
