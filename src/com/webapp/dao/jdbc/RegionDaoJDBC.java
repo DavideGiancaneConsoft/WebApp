@@ -10,6 +10,7 @@ import java.util.LinkedList;
 
 import com.webapp.bean.City;
 import com.webapp.bean.Region;
+import com.webapp.dao.DBPropertiesManager;
 import com.webapp.dao.DaoException;
 import com.webapp.dao.IRegionDAO;
 

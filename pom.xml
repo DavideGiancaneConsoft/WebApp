@@ -27,6 +27,14 @@
   </build>
   
   <dependencies>
+  <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+	<dependency>
+	    <groupId>javax.servlet</groupId>
+	    <artifactId>javax.servlet-api</artifactId>
+	    <version>4.0.1</version>
+	    <scope>provided</scope>
+	</dependency>
+  
 	<!-- https://mvnrepository.com/artifact/jstl/jstl -->
   	<dependency>
 	  	<groupId>jstl</groupId>
@@ -55,5 +63,11 @@
 	    <version>5.4.17.Final</version>
 	</dependency>
 	
+	<!-- JAR ESTERNO AGGIUNTO TRAMITE FILE->IMPORT->MAVEN -->
+	<dependency>
+	    <groupId>com.oracle.jdbc</groupId>
+	    <artifactId>ojdbc8</artifactId>
+	    <version>12.2.0.1</version>
+	</dependency>
   </dependencies>
 </project>

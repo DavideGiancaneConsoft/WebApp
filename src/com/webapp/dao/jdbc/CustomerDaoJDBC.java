@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import com.webapp.bean.Customer;
+import com.webapp.dao.DBPropertiesManager;
 import com.webapp.dao.DaoException;
 import com.webapp.dao.ICustomerDAO;
 

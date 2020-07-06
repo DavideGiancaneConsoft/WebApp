@@ -1,10 +1,10 @@
-package com.webapp.dao.jdbc;
+package com.webapp.dao;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-class DBPropertiesManager {
+public class DBPropertiesManager {
 	
 	private static DBPropertiesManager instance;
 	private Properties prop;
@@ -41,5 +41,17 @@ class DBPropertiesManager {
 	
 	public String getPsw() {
 		return prop.getProperty("DB_PSW");
+	}
+	
+	public String getOracleDbUri() {
+		return prop.getProperty("ORACLE_DB_URI");
+	}
+	
+	public String getOracleDbUser() {
+		return prop.getProperty("ORACLE_DB_USER");
+	}
+	
+	public String getOracleDbPsw() {
+		return prop.getProperty("ORACLE_DB_PSW");
 	}
 }
