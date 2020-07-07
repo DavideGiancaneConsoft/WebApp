@@ -15,7 +15,6 @@ import com.webapp.bean.Region;
 import com.webapp.dao.DaoException;
 import com.webapp.dao.IRegionDAO;
 import com.webapp.dao.jdbc.RegionDaoJDBC;
-import com.webapp.dao.jpa.RegionDaoJPA;
 
 /**
  * Servlet implementation class Registration
