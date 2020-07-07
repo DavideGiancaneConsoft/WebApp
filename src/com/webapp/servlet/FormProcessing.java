@@ -12,6 +12,7 @@ import com.webapp.bean.Customer;
 import com.webapp.dao.DaoException;
 import com.webapp.dao.ICustomerDAO;
 import com.webapp.dao.jdbc.CustomerDaoJDBC;
+import com.webapp.dao.ojdbc.CustomerDaoOJDBC;
 
 /**
  * Servlet implementation class FormProcessing
@@ -29,7 +30,7 @@ public class FormProcessing extends HttpServlet {
     @Override
     public void init() throws ServletException {
     	super.init();
-    	custDao = CustomerDaoJDBC.getInstance();
+    	custDao = CustomerDaoOJDBC.getInstance();
     }
     
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -15,6 +15,7 @@ import com.webapp.bean.Region;
 import com.webapp.dao.DaoException;
 import com.webapp.dao.IRegionDAO;
 import com.webapp.dao.jdbc.RegionDaoJDBC;
+import com.webapp.dao.ojdbc.RegionDaoOJDBC;
 
 /**
  * Servlet implementation class Registration
@@ -30,7 +31,7 @@ public class Registration extends HttpServlet {
 	@Override
 		public void init() throws ServletException {
 			super.init();
-			regionDao = RegionDaoJDBC.getInstance();
+			regionDao = RegionDaoOJDBC.getInstance();
 			gson = new Gson();
 		}
 

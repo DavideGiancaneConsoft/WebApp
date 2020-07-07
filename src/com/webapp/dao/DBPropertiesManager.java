@@ -27,10 +27,18 @@ public class DBPropertiesManager {
 		return instance;
 	}
 	
+	public String getDatabaseDriver(DBType dbType) throws Exception {
+		switch (dbType) {
+			case MySQL:	return prop.getProperty("JDBC_DRIVER");
+			case OracleDB: return prop.getProperty("ORACLE_DRIVER");
+			default: throw new Exception("Database not supported");
+		}
+	}
+	
 	public String getJdbcDriver() {
 		return prop.getProperty("JDBC_DRIVER");
 	}
-	
+		
 	public String getDbURI() {
 		return prop.getProperty("DB_URI");
 	}
@@ -53,5 +61,9 @@ public class DBPropertiesManager {
 	
 	public String getOracleDbPsw() {
 		return prop.getProperty("ORACLE_DB_PSW");
+	}
+	
+	public enum DBType {
+		MySQL, OracleDB
 	}
 }

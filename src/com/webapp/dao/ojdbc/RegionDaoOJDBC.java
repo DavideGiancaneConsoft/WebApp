@@ -13,6 +13,7 @@ import com.webapp.bean.Region;
 import com.webapp.dao.DBPropertiesManager;
 import com.webapp.dao.DaoException;
 import com.webapp.dao.IRegionDAO;
+import com.webapp.dao.DBPropertiesManager.DBType;
 
 import oracle.jdbc.OracleTypes;
 
@@ -22,7 +23,12 @@ public class RegionDaoOJDBC implements IRegionDAO{
 	private Connection connection;
 	
 	private RegionDaoOJDBC() {
-		dbPropertiesManager = DBPropertiesManager.getInstance();
+		try {
+			dbPropertiesManager = DBPropertiesManager.getInstance();
+			Class.forName(dbPropertiesManager.getDatabaseDriver(DBType.OracleDB));
+		} catch (Exception e) {
+			System.err.println("!!! Error: " + e.getMessage() + " !!!");
+		}
 	}
 	
 	public static IRegionDAO getInstance() {

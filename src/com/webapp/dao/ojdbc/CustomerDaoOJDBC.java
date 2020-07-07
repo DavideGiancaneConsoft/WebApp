@@ -6,9 +6,11 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import com.webapp.bean.Customer;
 import com.webapp.dao.DBPropertiesManager;
+import com.webapp.dao.DBPropertiesManager.DBType;
 import com.webapp.dao.DaoException;
 import com.webapp.dao.ICustomerDAO;
 
@@ -23,7 +25,12 @@ public class CustomerDaoOJDBC implements ICustomerDAO{
 	private CallableStatement stmt;
 
 	private CustomerDaoOJDBC() {
-		dbPropertiesManager = DBPropertiesManager.getInstance();
+		try {
+			dbPropertiesManager = DBPropertiesManager.getInstance();
+			Class.forName(dbPropertiesManager.getDatabaseDriver(DBType.OracleDB));
+		} catch (Exception e) {
+			System.err.println("!!! Error: " + e.getMessage() + " !!!");
+		}
 	}
 	
 	public static ICustomerDAO getInstance() {
@@ -39,6 +46,7 @@ public class CustomerDaoOJDBC implements ICustomerDAO{
 	@Override
 	public Collection<Customer> readCustomers() throws DaoException {
 		ResultSet rs = null;
+		Collection<Customer> customers = null;
 		try {
 			//Apro la connessione e preparo lo statement che richiama la procedura "get_all_customers"
 			openNewConnection();
@@ -52,15 +60,18 @@ public class CustomerDaoOJDBC implements ICustomerDAO{
 			
 			//Prendo il cursore e lo casto a result set per poterlo analizzare lato java
 			rs = (ResultSet) stmt.getObject(1);
+			customers = new LinkedList<>();
 			
 			while(rs.next()) {
-				System.out.println("Customer " + rs.getInt("cust_id"));
-				System.out.println("- Name: " + rs.getString("first_name"));
-				System.out.println("- Last name: " + rs.getString("last_name"));
-				System.out.println("- Phone: " + rs.getString("phone"));
-				System.out.println("- City: " + rs.getString("city"));
-			}
-			
+				Customer c = new Customer();
+				c.setId(rs.getInt("cust_id"));
+				c.setFirstName(rs.getString("first_name"));
+				c.setLastName(rs.getString("last_name"));
+				c.setPhoneNumber(rs.getString("phone"));
+				c.setCity(rs.getString("city"));
+				
+				customers.add(c);
+			}	
 		} catch (SQLException e) {
 			throw new DaoException(e.getMessage());
 		} finally {
@@ -73,7 +84,7 @@ public class CustomerDaoOJDBC implements ICustomerDAO{
 						e.getMessage() + " ***");
 			} catch (NullPointerException ignored) {}
 		}
-		return null;
+		return customers;
 	}
 
 	/**
