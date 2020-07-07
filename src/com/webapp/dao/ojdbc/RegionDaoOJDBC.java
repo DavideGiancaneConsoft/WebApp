@@ -44,7 +44,7 @@ public class RegionDaoOJDBC implements IRegionDAO{
 		try {
 			//Apro la connessione, preparo la chiamata alla procedura ed imposto il tipo di ritorno
 			openNewConnection();
-			CallableStatement stmt = connection.prepareCall("{call get_all_regions(?)}");
+			CallableStatement stmt = connection.prepareCall("{call residency_package.get_all_regions(?)}");
 			stmt.registerOutParameter(1, OracleTypes.CURSOR);
 			
 			//Eseguo la procedura
@@ -81,7 +81,7 @@ public class RegionDaoOJDBC implements IRegionDAO{
 		try {
 			//Apro la connessione, preparo la chiamata alla procedura ed imposto i parametri IN e OUT
 			openNewConnection();
-			CallableStatement stmt = connection.prepareCall("{call get_cities_by_region(?,?)}");
+			CallableStatement stmt = connection.prepareCall("{call residency_package.get_cities_by_region(?,?)}");
 			stmt.setInt(1, regionID);
 			stmt.registerOutParameter(2, OracleTypes.CURSOR);
 			
