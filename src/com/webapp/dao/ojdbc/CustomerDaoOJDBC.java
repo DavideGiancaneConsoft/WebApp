@@ -60,7 +60,7 @@ public class CustomerDaoOJDBC implements ICustomerDAO{
 			
 			//Prendo il cursore e lo casto a result set per poterlo analizzare lato java
 			rs = (ResultSet) stmt.getObject(1);
-			customers = new LinkedList<>();
+			customers = new LinkedList<Customer>();
 			
 			while(rs.next()) {
 				Customer c = new Customer();

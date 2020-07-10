@@ -54,7 +54,7 @@ public class RegionDaoOJDBC implements IRegionDAO{
 			rs = (ResultSet) stmt.getObject(1);
 			
 			//Vado a riempire la collection
-			regions = new LinkedList<>();
+			regions = new LinkedList<Region>();
 			while(rs.next()) {
 				int regionID = rs.getInt("reg_id");
 				String regionName = rs.getString("region_name");
@@ -92,7 +92,7 @@ public class RegionDaoOJDBC implements IRegionDAO{
 			rs = (ResultSet) stmt.getObject(2);
 			
 			//Vado a riempire la collection
-			cities = new LinkedList<>();
+			cities = new LinkedList<City>();
 			while(rs.next()) {
 				char[] initials = rs.getString("initials").toCharArray();
 				String cityName = rs.getString("city_name");
