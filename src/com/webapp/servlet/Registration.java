@@ -3,6 +3,7 @@ package com.webapp.servlet;
 import java.io.IOException;
 import java.util.Collection;
 
+import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,9 +14,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.webapp.bean.City;
 import com.webapp.bean.Region;
-import com.webapp.dao.DaoException;
-import com.webapp.dao.IRegionDAO;
-import com.webapp.dao.jpa.RegionDaoJPA;
+import com.webapp.business.ICustomersService;
+import com.webapp.business.IResidencyService;
 
 /**
  * Servlet implementation class Registration
@@ -25,14 +25,17 @@ public class Registration extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
     private static final String citiesRequest = "CitiesRequest";
-	private IRegionDAO regionDao;
 	private Collection<Region> regions;
 	private GsonBuilder gsonBuilder;
+	
+	@EJB
+	private ICustomersService customersService;
+	
+	private IResidencyService residencyService;
 	
 	@Override
 	public void init() throws ServletException {
 		super.init();
-		regionDao = RegionDaoJPA.getInstance();
 		gsonBuilder = new GsonBuilder();
 	}
 
@@ -41,7 +44,7 @@ public class Registration extends HttpServlet {
 		String jspPath = null;
 		try {
 			if(action == null) {
-				regions = regionDao.selectRegions();
+				regions = residencyService.getRegions();
 				request.setAttribute("regions", regions);
 				
 				//Forward verso la JSP
@@ -50,7 +53,7 @@ public class Registration extends HttpServlet {
 			} else if(action.contentEquals(citiesRequest)) {
 				int regionID = Integer.valueOf(request.getParameter("regionID"));
 				
-				Collection<City> cities = regionDao.selectCitiesByRegion(regionID);
+				Collection<City> cities = residencyService.getCitiesByRegion(regionID);
 
 				Gson gson = gsonBuilder.excludeFieldsWithoutExposeAnnotation().create();
 				String jsonObject = gson.toJson(cities);
