@@ -13,8 +13,6 @@ import com.webapp.bean.City;
 import com.webapp.bean.Customer;
 import com.webapp.business.ICustomersService;
 import com.webapp.business.IResidencyService;
-import com.webapp.dao.ICustomerDAO;
-import com.webapp.dao.IRegionDAO;
 
 /**
  * Servlet implementation class FormProcessing
